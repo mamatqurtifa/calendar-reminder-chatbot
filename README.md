@@ -89,7 +89,7 @@ PROXY_SECRET=string-acak-panjang-dan-unik
 
 ---
 
-### 5. Test Lokal
+### 5. Test Lokal (Opsional)
 
 ```bash
 npm run dev
