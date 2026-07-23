@@ -399,6 +399,8 @@ Jika tidak dikirim atau kosong, digunakan pengingat default akun Google.
 
 ![Workflow Overview](public/images/workflow-overview.png)
 
+> **[Coba Chatbot di sini https://chat.botika.online/v3/c5Bpf9t](https://chat.botika.online/v3/c5Bpf9t)**
+
 ## Working Bot Footage
 
 Berikut adalah cuplikan layar atau rekaman saat bot sedang berjalan dan memproses data kalender secara langsung untuk masing-masing alur (workflow):
