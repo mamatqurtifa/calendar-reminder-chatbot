@@ -118,20 +118,14 @@ Uji endpoint menggunakan **Postman**:
 
 Proyek backend Express ini dapat dengan mudah di-deploy ke Vercel sebagai serverless function. Berdasarkan [Dokumentasi Resmi Vercel untuk Express](http://vercel.com/docs/frameworks/backend/express), berikut langkah-langkahnya:
 
-1. Install Vercel CLI secara global (jika belum):
-   ```bash
-   npm i -g vercel
-   ```
-2. Login dan jalankan deploy dari terminal di root direktori proyek Anda:
-   ```bash
-   vercel
-   ```
-   *Ikuti prompt yang muncul untuk mengatur proyek baru.*
-3. **Setup Environment Variables di Vercel**:
-   - Buka dashboard proyek Anda di [Vercel](https://vercel.com).
-   - Masuk ke menu **Settings** > **Environment Variables**.
+1. **Deploy dari Vercel Dashboard (Pilih Salah Satu Opsi)**:
+   - **Opsi A (Paling Mudah):** Buka [Vercel Dashboard](https://vercel.com) > klik **Add New Project** > pada bagian bawah klik **Import Third-Party Git Repository**, lalu *paste* link GitHub proyek ini:
+     `https://github.com/mamatqurtifa/calendar-reminder-and-backend-proxy-express`
+   - **Opsi B (Buat Repo Sendiri):** Unduh [index.js](https://raw.githubusercontent.com/mamatqurtifa/calendar-reminder-and-backend-proxy-express/main/index.js) dan [package.json](https://raw.githubusercontent.com/mamatqurtifa/calendar-reminder-and-backend-proxy-express/main/package.json), masukkan ke repository GitHub kosong milik Anda, lalu import repository Anda tersebut di Vercel Dashboard.
+2. **Setup Environment Variables di Vercel**:
+   - Di halaman konfigurasi deploy (atau nantinya di **Settings** > **Environment Variables**), masukkan konfigurasi `.env`.
    - Anda bisa langsung **mengunggah file `.env`** atau **copy-paste seluruh isi `.env`** Anda ke kolom yang tersedia, dan semua variabel akan otomatis terisi. Anda tidak perlu memasukkan `PORT`.
-   - Setelah ditambahkan, pastikan untuk menekan tombol **Redeploy** (atau deploy ulang via CLI) agar server Vercel memuat environment variabel terbaru.
+   - *Catatan:* Jika Anda mengubah/menambahkan env var *setelah* project ter-deploy, Anda perlu mendeploy ulang. Masuk ke tab **Deployments** di dashboard, klik titik tiga pada deployment terbaru Anda, lalu pilih **Redeploy**.
 
 **URL endpoint:**
 ```
