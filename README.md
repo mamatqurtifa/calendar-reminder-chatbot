@@ -1,4 +1,4 @@
-# Setup Google Calendar Proxy (Express)
+# Setup Chatbot Calendar Reminder (Express)
 
 Proxy server-side berbasis Express.js untuk mengakses Google Calendar API menggunakan OAuth2 refresh token.
 Client (n8n, Make, dsb.) cukup memanggil satu endpoint HTTP tanpa perlu mengelola OAuth sendiri.
