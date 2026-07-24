@@ -1,20 +1,19 @@
 # Setup Chatbot Calendar Reminder
 
-Chatbot AI yang terhubung langsung ke Google Calendar milik Anda. Chatbot ini bisa melihat, menambah, mengedit, mencari, dan menghapus jadwal lewat percakapan natural.
+Proxy server-side berbasis Express.js untuk mengakses Google Calendar API menggunakan OAuth2 refresh token.
+Client (n8n, Make, dsb.) cukup memanggil satu endpoint HTTP tanpa perlu mengelola OAuth sendiri.
 
 ---
 
 ## Chatbot Persona
 
-Untuk memandu pembuatan agent AI (Agent Assistant), berikut adalah persona yang bisa Anda gunakan pada pengaturan *Persona*. Copy persona berikut dan paste pada bagian tab **Persona** di sidebar kiri [**Botika Platform v3 Agentic**](https://platform.botika.online/gpt/):
+Untuk memandu pembuatan agent AI (Agent Assistant), berikut adalah persona yang bisa Anda gunakan pada pengaturan *Persona*:
 
-```
-You are Calendar Reminder Assistant, a helpful and reliable AI assistant that helps users manage their Google Calendar. You can create, view, search, update, delete, and organize calendar events and reminders through natural conversations. Always understand the user's intent, ask for any missing required information when necessary, and provide clear, concise, and friendly responses. When handling dates and times, interpret relative expressions such as "today", "tomorrow", "next week", or "last Monday" accurately based on the current date. Your goal is to make scheduling simple, efficient, and effortless for every user.
-```
+> You are Calendar Reminder Assistant, a helpful and reliable AI assistant that helps users manage their Google Calendar. You can create, view, search, update, delete, and organize calendar events and reminders through natural conversations. Always understand the user's intent, ask for any missing required information when necessary, and provide clear, concise, and friendly responses. When handling dates and times, interpret relative expressions such as "today", "tomorrow", "next week", or "last Monday" accurately based on the current date. Your goal is to make scheduling simple, efficient, and effortless for every user.
 
 ---
 
-## Deploy Backend
+## Setup
 
 ### 1. Deploy ke Vercel (Dapatkan URL dulu)
 
@@ -30,18 +29,13 @@ Deploy project ini ke Vercel terlebih dahulu untuk mendapatkan URL deployment An
 
    ![Vercel — Import Third-Party Git Repository](public/images/vercel-import-link.png)
 
-4. Klik **Continue** dan klik **Deploy**. 
-
-     ![Vercel — Deploy Project](public/images/vercel-deploy.png)
-
-     Tunggu beberapa detik sampai proses selesai dan klik **Continue to Dashboard**
-
-5. **Salin URL deployment Anda**, contoh:
+4. Klik **Continue** — **lewati pengisian env var dulu**, biarkan kosong, langsung klik **Deploy**.
+5. Setelah deploy selesai, **salin URL deployment Anda**, contoh:
    ```
-   https://link-deploy-project-anda.vercel.app
+   https://<nama-project-anda>.vercel.app
    ```
 
-     ![Vercel — Deployment Success](public/images/vercel-dashboard-url-backend.png)
+   ![Vercel — Deployment Success](public/images/vercel-dashboard-url-backend.png)
 
 > URL ini akan dibutuhkan di langkah berikutnya sebagai Authorized Redirect URI.
 
@@ -71,17 +65,101 @@ Deploy project ini ke Vercel terlebih dahulu untuk mendapatkan URL deployment An
 
 ---
 
-### 3. Ambil Refresh Token & Isi Environment Variables
+### 3. Ambil Refresh Token
 
-Refresh token hanya perlu didapatkan sekali. Server akan me-refresh access token secara otomatis selanjutnya.
+Refresh token hanya perlu didapatkan **sekali**. Server akan me-refresh access token secara otomatis selanjutnya.
 
-1. Ambil refresh token dengan flow OAuth2 sekali saja menggunakan script helper, OAuth Playground, atau tool lain yang kamu pakai.
-2. Pastikan hasil akhirnya berupa nilai `GOOGLE_REFRESH_TOKEN`.
+> **Prasyarat:** Pastikan **Node.js** sudah terinstal di laptop Anda. Cek dengan perintah `node -v` di terminal. Jika belum, unduh di [nodejs.org](https://nodejs.org).
 
-Setelah mendapatkan semua nilai, siapkan environment variables berikut:
+**Langkah-langkahnya:**
+
+1. Buat folder baru di mana saja, misalnya `get-token`.
+
+2. Di dalam folder tersebut, buat file bernama **`package.json`**. Salin kode di bawah ini — atau langsung ambil dari GitHub di file [`package.json`](https://github.com/mamatqurtifa/calendar-reminder-and-backend-proxy-express/blob/main/package.json) (klik tombol **Raw** lalu *Select All* dan *Copy*):
+
+   ```json
+   {
+     "name": "calendar-proxy-express",
+     "version": "1.0.0",
+     "description": "",
+     "main": "index.js",
+     "dependencies": {
+       "express": "^4.19.2",
+       "googleapis": "^140.0.1",
+       "dotenv": "^16.4.5"
+     }
+   }
+   ```
+
+3. Buat file bernama **`get-token.js`**. Salin kode di bawah ini — atau langsung ambil dari GitHub di file [`get-token.js`](https://github.com/mamatqurtifa/calendar-reminder-and-backend-proxy-express/blob/main/get-token.js) (klik tombol **Raw** lalu *Select All* dan *Copy*). Setelah di-paste, **ganti `ISI_CLIENT_ID_KAMU` dan `ISI_CLIENT_SECRET_KAMU`** dengan nilai dari langkah sebelumnya:
+
+   ```js
+   const { google } = require('googleapis');
+   const readline = require('readline');
+
+   const CLIENT_ID = 'ISI_CLIENT_ID_KAMU';
+   const CLIENT_SECRET = 'ISI_CLIENT_SECRET_KAMU';
+   const BASE_URL = 'http://localhost:3000';
+
+   const REDIRECT_URI = `${BASE_URL}/oauth2callback`;
+
+   const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+   const SCOPES = ['https://www.googleapis.com/auth/calendar'];
+
+   const authUrl = oauth2Client.generateAuthUrl({
+     access_type: 'offline',
+     prompt: 'consent',
+     scope: SCOPES,
+   });
+
+   console.log('1. Buka URL berikut di browser pakai akun Google yang kalendernya mau diakses:\n');
+   console.log(authUrl);
+   console.log('\n2. Login & klik "Allow/Izinkan".');
+   console.log('3. Kamu akan diredirect ke URL yang kamu tentukan dan browser akan menampilkan error "This site can\'t be reached", karena tidak ada server yang jalan di sana.');
+   console.log('4. Lihat address bar browser, copy nilai parameter "code=" dari URL tersebut.');
+   console.log('5. Copy bagian setelah "code=" sampai sebelum "&scope"\n');
+
+   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+
+   rl.question('Paste kode dari URL di sini, lalu tekan Enter: ', async (code) => {
+     try {
+       const { tokens } = await oauth2Client.getToken(code.trim());
+
+       if (!tokens.refresh_token) {
+         console.log('\nTidak ada refresh_token yang dikembalikan.');
+         console.log('Kemungkinan kamu pernah authorize app ini sebelumnya.');
+         console.log('Coba cabut akses di https://myaccount.google.com/permissions lalu ulangi lagi.\n');
+       } else {
+         console.log('\nBerhasil! Simpan environment variable berikut:\n');
+         console.log('GOOGLE_REFRESH_TOKEN=' + tokens.refresh_token);
+         console.log('\nJangan bagikan nilai ini ke siapapun.\n');
+       }
+     } catch (err) {
+       console.error('\nGagal menukar kode jadi token:', err.message);
+     }
+     rl.close();
+   });
+   ```
+
+4. Buka terminal, masuk ke folder `get-token`, lalu jalankan perintah berikut satu per satu:
+
+   ```bash
+   npm install
+   node get-token.js
+   ```
+
+5. Ikuti instruksi yang muncul di terminal untuk membuka link, login, izinkan akses, copy kode dari URL, paste ke terminal.
+
+6. Setelah berhasil, terminal akan menampilkan nilai `GOOGLE_REFRESH_TOKEN=...`. Salin nilai tersebut untuk dipakai di langkah berikutnya.
+
+---
+
+### 4. Environment Variables
+
+Siapkan nilai-nilai berikut di Notepad atau text editor, lalu sesuaikan dengan kredensial milik Anda:
 
 ```env
-PORT=3000
 GOOGLE_CLIENT_ID=123456789012-abcdefgh.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxxxxx
 GOOGLE_REFRESH_TOKEN=1//0gxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -90,14 +168,14 @@ DEFAULT_TIMEZONE=Asia/Jakarta
 PROXY_SECRET=string-acak-panjang-dan-unik
 ```
 
-Sesuaikan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`, dan `PROXY_SECRET` dengan nilai milik Anda. Anda bisa menyalin template di atas ke Notepad lalu edit di sana.
+> Ganti `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`, dan `PROXY_SECRET` dengan nilai milik Anda. **Jangan tambahkan `PORT`** — tidak diperlukan di Vercel.
 
 ---
 
-### 4. Tambahkan Env Var di Vercel & Redeploy
+### 5. Tambahkan Env Var di Vercel & Redeploy
 
 1. Buka [Vercel Dashboard](https://vercel.com) > pilih project Anda > **Settings > Environment Variables**.
-2. Anda bisa langsung **mengunggah file `.env`** atau **copy-paste seluruh isi `.env`** ke kolom yang tersedia — semua variabel akan otomatis terisi. Anda tidak perlu memasukkan `PORT`.
+2. **Copy-paste seluruh isi env var** ke kolom yang tersedia — semua variabel akan otomatis terisi.
 3. Setelah env var tersimpan, masuk ke tab **Deployments** > klik titik tiga pada deployment terbaru > pilih **Redeploy**.
 4. Setelah redeploy selesai, endpoint Anda siap digunakan:
    ```
@@ -106,17 +184,17 @@ Sesuaikan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`, da
 
 ---
 
-### 7. Buat Workflow di Botika Platform Agentic
+### 6. Setup Workflow di Botika Platform Agentic
 
-Setelah backend proxy berhasil berjalan (baik di lokal maupun Vercel), langkah selanjutnya adalah memasang *workflow* berikut:
+Setelah backend berhasil ter-deploy, pasang *workflow* berikut di Botika:
 
 1. Buka file [`workflow.txt`](./workflow.txt) yang ada di dalam repositori ini. File tersebut berisi kode template (JSON) dari seluruh *flow* Calendar Reminder.
 2. *Copy* seluruh isi dari file tersebut.
 3. Buka dashboard/editor workflow di [**Botika Platform v3 Agentic**](https://platform.botika.online/gpt/).
 4. *Paste* kode tersebut di workflow untuk meng-*import* seluruh *node*.
-5. **Sesuaikan Persona**, klik tab sebelah kiri pada bagian persona kemudian isi persona sesuai dengan referensi teks di bagian [Chatbot Persona](#chatbot-persona) di atas.
-6. Sesuaikan secret dan ganti dengan secret yang sudah anda buat sebelumnya pada node *Set User Variabel* setelah node *Start* dan node *Log Monitoring*.
-7. Pastikan endpoint di setiap node *HTTP Request* sudah mengarah ke URL Vercel Anda yang baru saja di-*deploy* (misal: `https://<domain-vercel-anda.vercel.app>/api/calendar`).
+5. **Sesuaikan Persona** — klik tab **Persona** di sidebar kiri, lalu isi dengan teks persona di bagian [Chatbot Persona](#chatbot-persona) di atas.
+6. Sesuaikan secret pada node *Set User Variabel* (setelah node *Start*) dan node *Log Monitoring* — ganti dengan `PROXY_SECRET` yang sudah Anda buat.
+7. Pastikan endpoint di setiap node *HTTP Request* sudah mengarah ke URL Vercel Anda (misal: `https://<nama-project-anda>.vercel.app/api/calendar`).
 
 ---
 
