@@ -15,22 +15,1551 @@ Untuk memandu pembuatan agent AI (Agent Assistant), berikut adalah persona yang 
 
 ## Setup
 
-### 1. Deploy ke Vercel (Dapatkan URL dulu)
+### 1. Siapkan Repository GitHub & Deploy ke Vercel (Dapatkan URL)
 
-Deploy project ini ke Vercel terlebih dahulu untuk mendapatkan URL deployment Anda. URL ini diperlukan saat mengkonfigurasi Google Cloud Console.
+Vercel membutuhkan repositori GitHub untuk di-deploy. Anda harus membuat repositori milik Anda sendiri yang berisi 3 file utama (`package.json`, `package-lock.json`, dan `index.js`).
 
-1. Buka [vercel.com](https://vercel.com) dan **login** ke akun Anda.
-2. Dari dashboard, klik **Add New Project**.
-3. Pada bagian bawah halaman, klik **Import Third-Party Git Repository**, lalu *paste* link berikut:
+1. Buka [github.com](https://github.com) dan buat repository baru (misal: `calendar-bot-proxy`).
+2. Di dalam repository tersebut, buat 3 file baru dan *copy-paste* kode di bawah ini ke masing-masing file:
 
-   ```
-   https://github.com/mamatqurtifa/calendar-reminder-and-backend-proxy-express.git
-   ```
+<details>
+<summary><b>1. package.json</b></summary>
 
-   ![Vercel — Import Third-Party Git Repository](public/images/vercel-import-link.png)
+```json
+{
+  "name": "calendar-api-express",
+  "version": "1.0.0",
+  "description": "Google Calendar proxy API with Express.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "get-refresh-token": "node get-refresh-token.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "googleapis": "^140.0.1"
+  }
+}
+```
+</details>
 
-4. Klik **Continue** — **lewati pengisian env var dulu**, biarkan kosong, langsung klik **Deploy**.
-5. Setelah deploy selesai, **salin URL deployment Anda**, contoh:
+<details>
+<summary><b>2. package-lock.json</b></summary>
+
+```json
+{
+  "name": "calendar-api-express",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "calendar-api-express",
+      "version": "1.0.0",
+      "dependencies": {
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "googleapis": "^140.0.1"
+      }
+    },
+    "node_modules/accepts": {
+      "version": "1.3.8",
+      "resolved": "https://registry.npmjs.org/accepts/-/accepts-1.3.8.tgz",
+      "integrity": "sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-types": "~2.1.34",
+        "negotiator": "0.6.3"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/agent-base": {
+      "version": "7.1.4",
+      "resolved": "https://registry.npmjs.org/agent-base/-/agent-base-7.1.4.tgz",
+      "integrity": "sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 14"
+      }
+    },
+    "node_modules/array-flatten": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/array-flatten/-/array-flatten-1.1.1.tgz",
+      "integrity": "sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==",
+      "license": "MIT"
+    },
+    "node_modules/base64-js": {
+      "version": "1.5.1",
+      "resolved": "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz",
+      "integrity": "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/bignumber.js": {
+      "version": "9.3.1",
+      "resolved": "https://registry.npmjs.org/bignumber.js/-/bignumber.js-9.3.1.tgz",
+      "integrity": "sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==",
+      "license": "MIT",
+      "engines": {
+        "node": "*"
+      }
+    },
+    "node_modules/body-parser": {
+      "version": "1.20.6",
+      "resolved": "https://registry.npmjs.org/body-parser/-/body-parser-1.20.6.tgz",
+      "integrity": "sha512-p5tAzS57i5MV9fZFDj9LeIiTZEufbSe2eDozP+ElheSUq1m74CRq1jI4mYNDdVs9vQztXFLuk/Gd6BWTdwRJ5g==",
+      "license": "MIT",
+      "dependencies": {
+        "bytes": "~3.1.2",
+        "content-type": "~1.0.5",
+        "debug": "2.6.9",
+        "depd": "2.0.0",
+        "destroy": "~1.2.0",
+        "http-errors": "~2.0.1",
+        "iconv-lite": "~0.4.24",
+        "on-finished": "~2.4.1",
+        "qs": "~6.15.1",
+        "raw-body": "~2.5.3",
+        "type-is": "~1.6.18",
+        "unpipe": "~1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.8",
+        "npm": "1.2.8000 || >= 1.4.16"
+      }
+    },
+    "node_modules/buffer-equal-constant-time": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz",
+      "integrity": "sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/bytes": {
+      "version": "3.1.2",
+      "resolved": "https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz",
+      "integrity": "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/call-bind-apply-helpers": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz",
+      "integrity": "sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/call-bound": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/call-bound/-/call-bound-1.0.4.tgz",
+      "integrity": "sha512-+ys997U96po4Kx/ABpBCqhA9EuxJaQWDQg7295H4hBphv3IZg0boBKuwYpt4YXp6MZ5AmZQnU/tyMTlRpaSejg==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "get-intrinsic": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/content-disposition": {
+      "version": "0.5.4",
+      "resolved": "https://registry.npmjs.org/content-disposition/-/content-disposition-0.5.4.tgz",
+      "integrity": "sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==",
+      "license": "MIT",
+      "dependencies": {
+        "safe-buffer": "5.2.1"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/content-type": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
+      "integrity": "sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/cookie": {
+      "version": "0.7.2",
+      "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.7.2.tgz",
+      "integrity": "sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/cookie-signature": {
+      "version": "1.0.7",
+      "resolved": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.7.tgz",
+      "integrity": "sha512-NXdYc3dLr47pBkpUCHtKSwIOQXLVn8dZEuywboCOJY/osA0wFSLlSawr3KN8qXJEyX66FcONTH8EIlVuK0yyFA==",
+      "license": "MIT"
+    },
+    "node_modules/debug": {
+      "version": "2.6.9",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+      "integrity": "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==",
+      "license": "MIT",
+      "dependencies": {
+        "ms": "2.0.0"
+      }
+    },
+    "node_modules/depd": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz",
+      "integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/destroy": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/destroy/-/destroy-1.2.0.tgz",
+      "integrity": "sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8",
+        "npm": "1.2.8000 || >= 1.4.16"
+      }
+    },
+    "node_modules/dotenv": {
+      "version": "16.6.1",
+      "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-16.6.1.tgz",
+      "integrity": "sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==",
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://dotenvx.com"
+      }
+    },
+    "node_modules/dunder-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/dunder-proto/-/dunder-proto-1.0.1.tgz",
+      "integrity": "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "gopd": "^1.2.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/ecdsa-sig-formatter": {
+      "version": "1.0.11",
+      "resolved": "https://registry.npmjs.org/ecdsa-sig-formatter/-/ecdsa-sig-formatter-1.0.11.tgz",
+      "integrity": "sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "safe-buffer": "^5.0.1"
+      }
+    },
+    "node_modules/ee-first": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
+      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==",
+      "license": "MIT"
+    },
+    "node_modules/encodeurl": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-2.0.0.tgz",
+      "integrity": "sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/es-define-property": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.1.tgz",
+      "integrity": "sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-errors": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz",
+      "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-object-atoms": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/es-object-atoms/-/es-object-atoms-1.1.2.tgz",
+      "integrity": "sha512-HWcBoN6NileqtSydK2FqHbS/LoDd2pqrnQHLyJzBj4kOp/ky2MWMN694xOfkK8/SnUsW2DH7EfyVlydKCsm1Zw==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/escape-html": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
+      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
+      "license": "MIT"
+    },
+    "node_modules/etag": {
+      "version": "1.8.1",
+      "resolved": "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz",
+      "integrity": "sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/express": {
+      "version": "4.22.2",
+      "resolved": "https://registry.npmjs.org/express/-/express-4.22.2.tgz",
+      "integrity": "sha512-IuL+Elrou2ZvCFHs18/CIzy2Nzvo25nZ1/D2eIZlz7c+QUayAcYoiM2BthCjs+EBHVpjYjcuLDAiCWgeIX3X1Q==",
+      "license": "MIT",
+      "dependencies": {
+        "accepts": "~1.3.8",
+        "array-flatten": "1.1.1",
+        "body-parser": "~1.20.5",
+        "content-disposition": "~0.5.4",
+        "content-type": "~1.0.4",
+        "cookie": "~0.7.1",
+        "cookie-signature": "~1.0.6",
+        "debug": "2.6.9",
+        "depd": "2.0.0",
+        "encodeurl": "~2.0.0",
+        "escape-html": "~1.0.3",
+        "etag": "~1.8.1",
+        "finalhandler": "~1.3.1",
+        "fresh": "~0.5.2",
+        "http-errors": "~2.0.0",
+        "merge-descriptors": "1.0.3",
+        "methods": "~1.1.2",
+        "on-finished": "~2.4.1",
+        "parseurl": "~1.3.3",
+        "path-to-regexp": "~0.1.12",
+        "proxy-addr": "~2.0.7",
+        "qs": "~6.15.1",
+        "range-parser": "~1.2.1",
+        "safe-buffer": "5.2.1",
+        "send": "~0.19.0",
+        "serve-static": "~1.16.2",
+        "setprototypeof": "1.2.0",
+        "statuses": "~2.0.1",
+        "type-is": "~1.6.18",
+        "utils-merge": "1.0.1",
+        "vary": "~1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.10.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/extend": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/extend/-/extend-3.0.2.tgz",
+      "integrity": "sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==",
+      "license": "MIT"
+    },
+    "node_modules/finalhandler": {
+      "version": "1.3.2",
+      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-1.3.2.tgz",
+      "integrity": "sha512-aA4RyPcd3badbdABGDuTXCMTtOneUCAYH/gxoYRTZlIJdF0YPWuGqiAsIrhNnnqdXGswYk6dGujem4w80UJFhg==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "2.6.9",
+        "encodeurl": "~2.0.0",
+        "escape-html": "~1.0.3",
+        "on-finished": "~2.4.1",
+        "parseurl": "~1.3.3",
+        "statuses": "~2.0.2",
+        "unpipe": "~1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/forwarded": {
+      "version": "0.2.0",
+      "resolved": "https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz",
+      "integrity": "sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/fresh": {
+      "version": "0.5.2",
+      "resolved": "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz",
+      "integrity": "sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/function-bind": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz",
+      "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/gaxios": {
+      "version": "6.7.1",
+      "resolved": "https://registry.npmjs.org/gaxios/-/gaxios-6.7.1.tgz",
+      "integrity": "sha512-LDODD4TMYx7XXdpwxAVRAIAuB0bzv0s+ywFonY46k126qzQHT9ygyoa9tncmOiQmmDrik65UYsEkv3lbfqQ3yQ==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "extend": "^3.0.2",
+        "https-proxy-agent": "^7.0.1",
+        "is-stream": "^2.0.0",
+        "node-fetch": "^2.6.9",
+        "uuid": "^9.0.1"
+      },
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/gcp-metadata": {
+      "version": "6.1.1",
+      "resolved": "https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-6.1.1.tgz",
+      "integrity": "sha512-a4tiq7E0/5fTjxPAaH4jpjkSv/uCaU2p5KC6HVGrvl0cDjA8iBZv4vv1gyzlmK0ZUKqwpOyQMKzZQe3lTit77A==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "gaxios": "^6.1.1",
+        "google-logging-utils": "^0.0.2",
+        "json-bigint": "^1.0.0"
+      },
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/get-intrinsic": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.3.0.tgz",
+      "integrity": "sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "es-define-property": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.1.1",
+        "function-bind": "^1.1.2",
+        "get-proto": "^1.0.1",
+        "gopd": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "hasown": "^2.0.2",
+        "math-intrinsics": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/get-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/get-proto/-/get-proto-1.0.1.tgz",
+      "integrity": "sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==",
+      "license": "MIT",
+      "dependencies": {
+        "dunder-proto": "^1.0.1",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/google-auth-library": {
+      "version": "9.15.1",
+      "resolved": "https://registry.npmjs.org/google-auth-library/-/google-auth-library-9.15.1.tgz",
+      "integrity": "sha512-Jb6Z0+nvECVz+2lzSMt9u98UsoakXxA2HGHMCxh+so3n90XgYWkq5dur19JAJV7ONiJY22yBTyJB1TSkvPq9Ng==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "base64-js": "^1.3.0",
+        "ecdsa-sig-formatter": "^1.0.11",
+        "gaxios": "^6.1.1",
+        "gcp-metadata": "^6.1.0",
+        "gtoken": "^7.0.0",
+        "jws": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/google-logging-utils": {
+      "version": "0.0.2",
+      "resolved": "https://registry.npmjs.org/google-logging-utils/-/google-logging-utils-0.0.2.tgz",
+      "integrity": "sha512-NEgUnEcBiP5HrPzufUkBzJOD/Sxsco3rLNo1F1TNf7ieU8ryUzBhqba8r756CjLX7rn3fHl6iLEwPYuqpoKgQQ==",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/googleapis": {
+      "version": "140.0.1",
+      "resolved": "https://registry.npmjs.org/googleapis/-/googleapis-140.0.1.tgz",
+      "integrity": "sha512-ZGvBX4mQcFXO9ACnVNg6Aqy3KtBPB5zTuue43YVLxwn8HSv8jB7w+uDKoIPSoWuxGROgnj2kbng6acXncOQRNA==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "google-auth-library": "^9.0.0",
+        "googleapis-common": "^7.0.0"
+      },
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/googleapis-common": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/googleapis-common/-/googleapis-common-7.2.0.tgz",
+      "integrity": "sha512-/fhDZEJZvOV3X5jmD+fKxMqma5q2Q9nZNSF3kn1F18tpxmA86BcTxAGBQdM0N89Z3bEaIs+HVznSmFJEAmMTjA==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "extend": "^3.0.2",
+        "gaxios": "^6.0.3",
+        "google-auth-library": "^9.7.0",
+        "qs": "^6.7.0",
+        "url-template": "^2.0.8",
+        "uuid": "^9.0.0"
+      },
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/gopd": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz",
+      "integrity": "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/gtoken": {
+      "version": "7.1.0",
+      "resolved": "https://registry.npmjs.org/gtoken/-/gtoken-7.1.0.tgz",
+      "integrity": "sha512-pCcEwRi+TKpMlxAQObHDQ56KawURgyAf6jtIY046fJ5tIv3zDe/LEIubckAO8fj6JnAxLdmWkUfNyulQ2iKdEw==",
+      "license": "MIT",
+      "dependencies": {
+        "gaxios": "^6.0.0",
+        "jws": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/has-symbols": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.1.0.tgz",
+      "integrity": "sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/hasown": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/hasown/-/hasown-2.0.4.tgz",
+      "integrity": "sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==",
+      "license": "MIT",
+      "dependencies": {
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/http-errors": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-2.0.1.tgz",
+      "integrity": "sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==",
+      "license": "MIT",
+      "dependencies": {
+        "depd": "~2.0.0",
+        "inherits": "~2.0.4",
+        "setprototypeof": "~1.2.0",
+        "statuses": "~2.0.2",
+        "toidentifier": "~1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/https-proxy-agent": {
+      "version": "7.0.6",
+      "resolved": "https://registry.npmjs.org/https-proxy-agent/-/https-proxy-agent-7.0.6.tgz",
+      "integrity": "sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==",
+      "license": "MIT",
+      "dependencies": {
+        "agent-base": "^7.1.2",
+        "debug": "4"
+      },
+      "engines": {
+        "node": ">= 14"
+      }
+    },
+    "node_modules/https-proxy-agent/node_modules/debug": {
+      "version": "4.4.3",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz",
+      "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.3"
+      },
+      "engines": {
+        "node": ">=6.0"
+      },
+      "peerDependenciesMeta": {
+        "supports-color": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/https-proxy-agent/node_modules/ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+      "license": "MIT"
+    },
+    "node_modules/iconv-lite": {
+      "version": "0.4.24",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz",
+      "integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==",
+      "license": "MIT",
+      "dependencies": {
+        "safer-buffer": ">= 2.1.2 < 3"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/inherits": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
+      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
+      "license": "ISC"
+    },
+    "node_modules/ipaddr.js": {
+      "version": "1.9.1",
+      "resolved": "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.9.1.tgz",
+      "integrity": "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/is-stream": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/is-stream/-/is-stream-2.0.1.tgz",
+      "integrity": "sha512-hFoiJiTl63nn+kstHGBtewWSKnQLpyb155KHheA1l39uvtO9nWIop1p3udqPcUd/xbF1VLMO4n7OI6p7RbngDg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/json-bigint": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/json-bigint/-/json-bigint-1.0.0.tgz",
+      "integrity": "sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==",
+      "license": "MIT",
+      "dependencies": {
+        "bignumber.js": "^9.0.0"
+      }
+    },
+    "node_modules/jwa": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/jwa/-/jwa-2.0.1.tgz",
+      "integrity": "sha512-hRF04fqJIP8Abbkq5NKGN0Bbr3JxlQ+qhZufXVr0DvujKy93ZCbXZMHDL4EOtodSbCWxOqR8MS1tXA5hwqCXDg==",
+      "license": "MIT",
+      "dependencies": {
+        "buffer-equal-constant-time": "^1.0.1",
+        "ecdsa-sig-formatter": "1.0.11",
+        "safe-buffer": "^5.0.1"
+      }
+    },
+    "node_modules/jws": {
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/jws/-/jws-4.0.1.tgz",
+      "integrity": "sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==",
+      "license": "MIT",
+      "dependencies": {
+        "jwa": "^2.0.1",
+        "safe-buffer": "^5.0.1"
+      }
+    },
+    "node_modules/math-intrinsics": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz",
+      "integrity": "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/media-typer": {
+      "version": "0.3.0",
+      "resolved": "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz",
+      "integrity": "sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/merge-descriptors": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-1.0.3.tgz",
+      "integrity": "sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/methods": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz",
+      "integrity": "sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/mime": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz",
+      "integrity": "sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==",
+      "license": "MIT",
+      "bin": {
+        "mime": "cli.js"
+      },
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/mime-db": {
+      "version": "1.52.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz",
+      "integrity": "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/mime-types": {
+      "version": "2.1.35",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz",
+      "integrity": "sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-db": "1.52.0"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/ms": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+      "integrity": "sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==",
+      "license": "MIT"
+    },
+    "node_modules/negotiator": {
+      "version": "0.6.3",
+      "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz",
+      "integrity": "sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/node-fetch": {
+      "version": "2.7.0",
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.7.0.tgz",
+      "integrity": "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==",
+      "license": "MIT",
+      "dependencies": {
+        "whatwg-url": "^5.0.0"
+      },
+      "engines": {
+        "node": "4.x || >=6.0.0"
+      },
+      "peerDependencies": {
+        "encoding": "^0.1.0"
+      },
+      "peerDependenciesMeta": {
+        "encoding": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/object-inspect": {
+      "version": "1.13.4",
+      "resolved": "https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.4.tgz",
+      "integrity": "sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/on-finished": {
+      "version": "2.4.1",
+      "resolved": "https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz",
+      "integrity": "sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==",
+      "license": "MIT",
+      "dependencies": {
+        "ee-first": "1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/parseurl": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
+      "integrity": "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/path-to-regexp": {
+      "version": "0.1.13",
+      "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.13.tgz",
+      "integrity": "sha512-A/AGNMFN3c8bOlvV9RreMdrv7jsmF9XIfDeCd87+I8RNg6s78BhJxMu69NEMHBSJFxKidViTEdruRwEk/WIKqA==",
+      "license": "MIT"
+    },
+    "node_modules/proxy-addr": {
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.7.tgz",
+      "integrity": "sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==",
+      "license": "MIT",
+      "dependencies": {
+        "forwarded": "0.2.0",
+        "ipaddr.js": "1.9.1"
+      },
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/qs": {
+      "version": "6.15.3",
+      "resolved": "https://registry.npmjs.org/qs/-/qs-6.15.3.tgz",
+      "integrity": "sha512-O9gl3zCl5h5blw1KGUzQKhA5oUXSl8rwUIM5o0S3nCXMliSvy5Dzx7/DJcI+SwgICv+IneSZwhBh1oSyEHA71A==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "es-define-property": "^1.0.1",
+        "side-channel": "^1.1.1"
+      },
+      "engines": {
+        "node": ">=0.6"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/range-parser": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/range-parser/-/range-parser-1.2.1.tgz",
+      "integrity": "sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/raw-body": {
+      "version": "2.5.3",
+      "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-2.5.3.tgz",
+      "integrity": "sha512-s4VSOf6yN0rvbRZGxs8Om5CWj6seneMwK3oDb4lWDH0UPhWcxwOWw5+qk24bxq87szX1ydrwylIOp2uG1ojUpA==",
+      "license": "MIT",
+      "dependencies": {
+        "bytes": "~3.1.2",
+        "http-errors": "~2.0.1",
+        "iconv-lite": "~0.4.24",
+        "unpipe": "~1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/safe-buffer": {
+      "version": "5.2.1",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz",
+      "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/safer-buffer": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
+      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==",
+      "license": "MIT"
+    },
+    "node_modules/send": {
+      "version": "0.19.2",
+      "resolved": "https://registry.npmjs.org/send/-/send-0.19.2.tgz",
+      "integrity": "sha512-VMbMxbDeehAxpOtWJXlcUS5E8iXh6QmN+BkRX1GARS3wRaXEEgzCcB10gTQazO42tpNIya8xIyNx8fll1OFPrg==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "2.6.9",
+        "depd": "2.0.0",
+        "destroy": "1.2.0",
+        "encodeurl": "~2.0.0",
+        "escape-html": "~1.0.3",
+        "etag": "~1.8.1",
+        "fresh": "~0.5.2",
+        "http-errors": "~2.0.1",
+        "mime": "1.6.0",
+        "ms": "2.1.3",
+        "on-finished": "~2.4.1",
+        "range-parser": "~1.2.1",
+        "statuses": "~2.0.2"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/send/node_modules/ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+      "license": "MIT"
+    },
+    "node_modules/serve-static": {
+      "version": "1.16.3",
+      "resolved": "https://registry.npmjs.org/serve-static/-/serve-static-1.16.3.tgz",
+      "integrity": "sha512-x0RTqQel6g5SY7Lg6ZreMmsOzncHFU7nhnRWkKgWuMTu5NN0DR5oruckMqRvacAN9d5w6ARnRBXl9xhDCgfMeA==",
+      "license": "MIT",
+      "dependencies": {
+        "encodeurl": "~2.0.0",
+        "escape-html": "~1.0.3",
+        "parseurl": "~1.3.3",
+        "send": "~0.19.1"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/setprototypeof": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
+      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==",
+      "license": "ISC"
+    },
+    "node_modules/side-channel": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/side-channel/-/side-channel-1.1.1.tgz",
+      "integrity": "sha512-6x6dK6zJdpTzF4sQeNYxwtvBzf6Eg4GtlesS94HOvTudUeyK2WXAaIfmDgsyslYrRBeFIlsi54AYsFGUuhmvrQ==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.4",
+        "side-channel-list": "^1.0.1",
+        "side-channel-map": "^1.0.1",
+        "side-channel-weakmap": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-list": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.1.tgz",
+      "integrity": "sha512-mjn/0bi/oUURjc5Xl7IaWi/OJJJumuoJFQJfDDyO46+hBWsfaVM65TBHq2eoZBhzl9EchxOijpkbRC8SVBQU0w==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.4"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-map": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/side-channel-map/-/side-channel-map-1.0.1.tgz",
+      "integrity": "sha512-VCjCNfgMsby3tTdo02nbjtM/ewra6jPHmpThenkTYh8pG9ucZ/1P8So4u4FGBek/BjpOVsDCMoLA/iuBKIFXRA==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-weakmap": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/side-channel-weakmap/-/side-channel-weakmap-1.0.2.tgz",
+      "integrity": "sha512-WPS/HvHQTYnHisLo9McqBHOJk2FkHO/tlpvldyrnem4aeQp4hai3gythswg6p01oSoTl58rcpiFAjF2br2Ak2A==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3",
+        "side-channel-map": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/statuses": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/statuses/-/statuses-2.0.2.tgz",
+      "integrity": "sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/toidentifier": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz",
+      "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.6"
+      }
+    },
+    "node_modules/tr46": {
+      "version": "0.0.3",
+      "resolved": "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz",
+      "integrity": "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==",
+      "license": "MIT"
+    },
+    "node_modules/type-is": {
+      "version": "1.6.18",
+      "resolved": "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz",
+      "integrity": "sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==",
+      "license": "MIT",
+      "dependencies": {
+        "media-typer": "0.3.0",
+        "mime-types": "~2.1.24"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/unpipe": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz",
+      "integrity": "sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/url-template": {
+      "version": "2.0.8",
+      "resolved": "https://registry.npmjs.org/url-template/-/url-template-2.0.8.tgz",
+      "integrity": "sha512-XdVKMF4SJ0nP/O7XIPB0JwAEuT9lDIYnNsK8yGVe43y0AWoKeJNdv3ZNWh7ksJ6KqQFjOO6ox/VEitLnaVNufw==",
+      "license": "BSD"
+    },
+    "node_modules/utils-merge": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz",
+      "integrity": "sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4.0"
+      }
+    },
+    "node_modules/uuid": {
+      "version": "9.0.1",
+      "resolved": "https://registry.npmjs.org/uuid/-/uuid-9.0.1.tgz",
+      "integrity": "sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==",
+      "deprecated": "uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).",
+      "funding": [
+        "https://github.com/sponsors/broofa",
+        "https://github.com/sponsors/ctavan"
+      ],
+      "license": "MIT",
+      "bin": {
+        "uuid": "dist/bin/uuid"
+      }
+    },
+    "node_modules/vary": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz",
+      "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/webidl-conversions": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz",
+      "integrity": "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==",
+      "license": "BSD-2-Clause"
+    },
+    "node_modules/whatwg-url": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/whatwg-url/-/whatwg-url-5.0.0.tgz",
+      "integrity": "sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==",
+      "license": "MIT",
+      "dependencies": {
+        "tr46": "~0.0.3",
+        "webidl-conversions": "^3.0.0"
+      }
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary><b>3. index.js</b></summary>
+
+```javascript
+// index.js
+
+require('dotenv').config();
+const express = require('express');
+const { google } = require('googleapis');
+
+// GOOGLE CALENDAR HELPERS
+function getOAuth2Client() {
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+  );
+
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  });
+
+  return oauth2Client;
+}
+
+function getCalendarClient() {
+  const auth = getOAuth2Client();
+  return google.calendar({ version: 'v3', auth });
+}
+
+const DEFAULT_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID || 'primary';
+const DEFAULT_TIMEZONE = process.env.DEFAULT_TIMEZONE || 'Asia/Jakarta';
+
+function cleanString(value) {
+  if (value === null || value === undefined) return '';
+  const str = String(value).trim();
+  if (str.toLowerCase() === 'null' || str.toLowerCase() === 'undefined') return '';
+  return str;
+}
+
+// Parse string datetime ke Date
+function parseDateTime(str) {
+  if (/[Z]$/.test(str) || /[+-]\d{2}:?\d{2}$/.test(str)) {
+    return new Date(str);
+  }
+  return new Date(str + '+07:00');
+}
+
+// Format 1 event Google Calendar jadi object simpel
+function formatEvent(event) {
+  return {
+    id: event.id,
+    title: event.summary || '',
+    description: event.description || '',
+    start: (event.start && (event.start.dateTime || event.start.date)) || undefined,
+    end: (event.end && (event.end.dateTime || event.end.date)) || undefined,
+    isAllDay: !!(event.start && event.start.date) && !(event.start && event.start.dateTime),
+    location: event.location || '',
+    recurringEventId: event.recurringEventId || null,
+  };
+}
+
+// Bangun RRULE (RFC 5545) dari spec sederhana, dipakai buat reminder berulang
+function buildRRule(spec) {
+  const freqMap = {
+    daily: 'DAILY',
+    weekly: 'WEEKLY',
+    monthly: 'MONTHLY',
+    yearly: 'YEARLY',
+  };
+  const freq = freqMap[spec.type];
+  if (!freq) throw new Error('Tipe recurrence tidak dikenali: ' + spec.type);
+
+  let rule = `FREQ=${freq}`;
+  if (spec.interval) rule += `;INTERVAL=${spec.interval}`;
+
+  if (spec.weekdays && spec.weekdays.length > 0) {
+    const dayMap = {
+      MONDAY: 'MO',
+      TUESDAY: 'TU',
+      WEDNESDAY: 'WE',
+      THURSDAY: 'TH',
+      FRIDAY: 'FR',
+      SATURDAY: 'SA',
+      SUNDAY: 'SU',
+    };
+    const days = spec.weekdays
+      .map((d) => dayMap[d.toUpperCase()])
+      .filter(Boolean);
+    if (days.length > 0) rule += `;BYDAY=${days.join(',')}`;
+  }
+
+  if (spec.until) {
+    const untilDate = new Date(spec.until);
+    const yyyy = untilDate.getUTCFullYear();
+    const mm = String(untilDate.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(untilDate.getUTCDate()).padStart(2, '0');
+    rule += `;UNTIL=${yyyy}${mm}${dd}T235959Z`;
+  } else if (spec.count) {
+    rule += `;COUNT=${spec.count}`;
+  }
+
+  return `RRULE:${rule}`;
+}
+
+// Return null jika tidak ada entry valid (dipakai di editEvent agar
+// patch tidak menyentuh reminders sama sekali)
+function buildRemindersOrNull(remindersArr) {
+  if (!remindersArr || remindersArr.length === 0) return null;
+
+  const valid = remindersArr
+    .filter((r) => {
+      if (!r || r.minutes === null || r.minutes === undefined || r.minutes === '') return false;
+      return !isNaN(Number(r.minutes));
+    })
+    .map((r) => ({
+      method: r.method === 'email' ? 'email' : 'popup',
+      minutes: Number(r.minutes),
+    }));
+
+  if (valid.length === 0) return null;
+  return { useDefault: false, overrides: valid };
+}
+
+function buildReminders(remindersArr) {
+  if (!remindersArr || remindersArr.length === 0) {
+    return { useDefault: true };
+  }
+
+  const valid = remindersArr
+    .filter((r) => {
+      if (!r || r.minutes === null || r.minutes === undefined || r.minutes === '') {
+        return false;
+      }
+      return !isNaN(Number(r.minutes));
+    })
+    .map((r) => ({
+      method: r.method === 'email' ? 'email' : 'popup',
+      minutes: Number(r.minutes),
+    }));
+
+  if (valid.length === 0) {
+    return { useDefault: true };
+  }
+
+  return { useDefault: false, overrides: valid };
+}
+
+// ACTION HANDLERS
+
+// ACTION LIST - Lihat jadwal dalam rentang waktu
+async function listEvents(calendar, calendarId, body) {
+  if (!body.start || !body.end) {
+    throw new Error('Parameter start dan end wajib diisi');
+  }
+
+  const result = await calendar.events.list({
+    calendarId,
+    timeMin: new Date(body.start).toISOString(),
+    timeMax: new Date(body.end).toISOString(),
+    singleEvents: true,
+    orderBy: 'startTime',
+  });
+
+  return (result.data.items || []).map(formatEvent);
+}
+
+// ACTION ADD - Tambah reminder/event baru (biasa atau berulang)
+async function addEvent(calendar, calendarId, body) {
+  const title = cleanString(body.title);
+  if (!title || !body.start || !body.end) {
+    throw new Error('Parameter title, start, end wajib diisi');
+  }
+
+  const timeZone = cleanString(body.timezone) || DEFAULT_TIMEZONE;
+  const isAllDay = body.all_day === true || body.all_day === 'true';
+
+  const startDate = parseDateTime(body.start);
+  const endDate = parseDateTime(body.end);
+
+  if (!isAllDay && startDate.getTime() === endDate.getTime()) {
+    endDate.setHours(endDate.getHours() + 1);
+  }
+
+  const requestBody = {
+    summary: title,
+    description: cleanString(body.description),
+    location: cleanString(body.location),
+    start: isAllDay
+      ? { date: body.start.split('T')[0] }
+      : { dateTime: startDate.toISOString(), timeZone },
+    end: isAllDay
+      ? { date: body.end.split('T')[0] }
+      : { dateTime: endDate.toISOString(), timeZone },
+    reminders: buildReminders(body.reminders),
+  };
+
+  if (body.recurrence) {
+    requestBody.recurrence = [buildRRule(body.recurrence)];
+  }
+
+  const result = await calendar.events.insert({ calendarId, requestBody });
+  return formatEvent(result.data);
+}
+
+// ACTION EDIT - Edit reminder/event yang sudah ada (partial update)
+async function editEvent(calendar, calendarId, body) {
+  if (!body.eventId) throw new Error('Parameter eventId wajib diisi');
+
+  const patch = {};
+  if (body.title) {
+    const title = cleanString(body.title);
+    if (title) patch.summary = title;
+  }
+  if (body.description !== undefined) patch.description = cleanString(body.description);
+  if (body.location) {
+    const location = cleanString(body.location);
+    if (location) patch.location = location;
+  }
+  if (body.start && body.end) {
+    const timeZone = cleanString(body.timezone) || DEFAULT_TIMEZONE;
+    const isAllDay = body.all_day === true || body.all_day === 'true';
+
+    const startDate = parseDateTime(body.start);
+    const endDate = parseDateTime(body.end);
+
+    if (!isAllDay && startDate.getTime() === endDate.getTime()) {
+      endDate.setHours(endDate.getHours() + 1);
+    }
+
+    patch.start = isAllDay
+      ? { date: body.start.split('T')[0] }
+      : { dateTime: startDate.toISOString(), timeZone };
+    patch.end = isAllDay
+      ? { date: body.end.split('T')[0] }
+      : { dateTime: endDate.toISOString(), timeZone };
+  }
+  if (body.reminders) {
+    const builtReminders = buildRemindersOrNull(body.reminders);
+    if (builtReminders) patch.reminders = builtReminders;
+  }
+
+  const result = await calendar.events.patch({
+    calendarId,
+    eventId: body.eventId,
+    requestBody: patch,
+  });
+
+  return formatEvent(result.data);
+}
+
+// ACTION: DELETE - Hapus reminder/event
+async function deleteEvent(calendar, calendarId, body) {
+  if (!body.eventId) throw new Error('Parameter eventId wajib diisi');
+
+  await calendar.events.delete({ calendarId, eventId: body.eventId });
+  return { deleted: true, eventId: body.eventId };
+}
+
+// ACTION: SEARCH - Cari reminder berdasarkan kata kunci
+async function searchEvents(calendar, calendarId, body) {
+  const query = cleanString(body.query);
+
+  const timeMin = body.start
+    ? new Date(body.start).toISOString()
+    : new Date().toISOString();
+  const timeMax = body.end
+    ? new Date(body.end).toISOString()
+    : new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString();
+
+  const result = await calendar.events.list({
+    calendarId,
+    ...(query ? { q: query } : {}),
+    timeMin,
+    timeMax,
+    singleEvents: true,
+    orderBy: 'startTime',
+  });
+
+  return (result.data.items || []).map(formatEvent);
+}
+
+// EXPRESS APP
+
+const app = express();
+app.use(express.json());
+
+// Kalau body request bukan JSON valid, express.json() akan throw
+// sebelum masuk ke route
+app.use((err, req, res, next) => {
+  if (err && err.type === 'entity.parse.failed') {
+    return res.status(400).json({ ok: false, error: 'Body request bukan JSON yang valid' });
+  }
+  next(err);
+});
+
+// CORS
+app.use('/api/calendar', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
+app.options('/api/calendar', (req, res) => {
+  res.status(204).end();
+});
+
+app.post('/api/calendar', async (req, res) => {
+  const body = req.body;
+
+  if (!body || typeof body !== 'object') {
+    return res.status(400).json({ ok: false, error: 'Body request bukan JSON yang valid' });
+  }
+
+  if (body.secret !== process.env.PROXY_SECRET) {
+    return res.status(401).json({ ok: false, error: 'Unauthorized: secret key salah' });
+  }
+
+  const calendarId = cleanString(body.calendarId) || DEFAULT_CALENDAR_ID;
+  const calendar = getCalendarClient();
+
+  try {
+    let data;
+    switch (body.action) {
+      case 'list':
+        data = await listEvents(calendar, calendarId, body);
+        break;
+      case 'add':
+        data = await addEvent(calendar, calendarId, body);
+        break;
+      case 'edit':
+        data = await editEvent(calendar, calendarId, body);
+        break;
+      case 'delete':
+        data = await deleteEvent(calendar, calendarId, body);
+        break;
+      case 'search':
+        data = await searchEvents(calendar, calendarId, body);
+        break;
+      default:
+        return res.status(400).json({ ok: false, error: 'Action tidak dikenali: ' + body.action });
+    }
+
+    return res.status(200).json({ ok: true, data });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message || 'Terjadi kesalahan tak terduga' });
+  }
+});
+
+// Fallback error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ ok: false, error: 'Terjadi kesalahan tak terduga' });
+});
+
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+  console.log(`Calendar API listening on port ${PORT}`);
+});
+```
+</details>
+
+3. Setelah ketiga file tersebut selesai dibuat dan di-*commit* ke repository GitHub Anda, *copy* URL repository Anda (contoh: `https://github.com/username/calendar-bot-proxy`).
+4. Buka [vercel.com](https://vercel.com) dan **login** ke akun Anda.
+5. Dari dashboard Vercel, klik **Add New Project**.
+6. Pada bagian bawah halaman, temukan **Import Third-Party Git Repository**, lalu *paste* link URL repository Anda ke kotak tersebut.
+7. Klik **Continue** — **lewati pengisian env var dulu**, biarkan kosong, langsung klik **Deploy**.
+8. Setelah deploy selesai, **salin URL deployment Anda**, contoh:
    ```
    https://<nama-project-anda>.vercel.app
    ```
@@ -157,7 +1686,7 @@ Refresh token hanya perlu didapatkan **sekali**. Server akan me-refresh access t
 
 ### 4. Environment Variables
 
-Siapkan nilai-nilai berikut di Notepad atau text editor, lalu sesuaikan dengan kredensial milik Anda:
+Siapkan nilai-nilai berikut di Notepad, lalu sesuaikan dengan kredensial milik Anda:
 
 ```env
 GOOGLE_CLIENT_ID=123456789012-abcdefgh.apps.googleusercontent.com
@@ -175,7 +1704,7 @@ PROXY_SECRET=string-acak-panjang-dan-unik
 ### 5. Tambahkan Env Var di Vercel & Redeploy
 
 1. Buka [Vercel Dashboard](https://vercel.com) > pilih project Anda > **Settings > Environment Variables**.
-2. **Copy-paste seluruh isi env var** ke kolom yang tersedia — semua variabel akan otomatis terisi.
+2. **Copy-paste seluruh isi env var** ke kolom yang tersedia dan otomatis semua variabel akan terisi.
 3. Setelah env var tersimpan, masuk ke tab **Deployments** > klik titik tiga pada deployment terbaru > pilih **Redeploy**.
 4. Setelah redeploy selesai, endpoint Anda siap digunakan:
    ```
@@ -188,10 +1717,19 @@ PROXY_SECRET=string-acak-panjang-dan-unik
 
 Setelah backend berhasil ter-deploy, pasang *workflow* berikut di Botika:
 
-1. Buka file [`workflow.txt`](./workflow.txt) yang ada di dalam repositori ini. File tersebut berisi kode template (JSON) dari seluruh *flow* Calendar Reminder.
-2. *Copy* seluruh isi dari file tersebut.
-3. Buka dashboard/editor workflow di [**Botika Platform v3 Agentic**](https://platform.botika.online/gpt/).
-4. *Paste* kode tersebut di workflow untuk meng-*import* seluruh *node*.
+1. Buka dashboard/editor workflow di [**Botika Platform v3 Agentic**](https://platform.botika.online/gpt/).
+2. *Copy* kode JSON workflow di bawah ini:
+
+<details>
+<summary><b>Klik untuk melihat Workflow JSON</b> (Lalu hover ke pojok kanan atas blok kode untuk Copy)</summary>
+
+```json
+{"nodes":[{"id":"5ll2h0cl68","type":"log-monitoring","position":{"x":78,"y":343},"properties":{"label":"Log Monitoring","title":"User Request","content":"{{node_output}}","description":""},"next":{"main":[{"type":"continue","target_node":"xcaa7h2rx5"}]}},{"id":"7top2smk6c","type":"entity-llm","position":{"x":85,"y":508},"properties":{"label":"Entity LLM","model":"azure-openai/gpt-4o","description":"","llm_provider":"azure_openai","text_message":"{{node_output}}","entities_schema":[{"name":"parent_menu","description":"Tentukan aksi utama Google Calendar yang diminta pengguna, lalu pilih SATU menu yang paling sesuai: \"Lihat Jadwal\", \"Tambah Reminder\", \"Edit Reminder\", \"Hapus Reminder\", \"Cari Reminder\", \"Reminder Berulang\".\n\nPRINSIP UTAMA\nKlasifikasikan berdasarkan MAKSUD pengguna, bukan hanya kata kunci literal. Banyak permintaan disampaikan secara implisit, tanpa kata kerja eksplisit seperti \"tambah\", \"hapus\", atau \"ubah\". Baca kalimat sebagai satu konteks utuh, termasuk pesan-pesan sebelumnya dalam percakapan jika relevan (misalnya pengguna merujuk \"yang tadi\" atau \"acara itu\").\n\nTAMBAH REMINDER (perhatikan khusus, sering terlewat karena implisit)\nKlasifikasikan sebagai \"Tambah Reminder\" jika:\n- Pengguna menyebutkan rencana, niat, atau kegiatan di waktu tertentu di masa depan, meskipun tidak eksplisit minta disimpan. Contoh: \"sore nanti aku mau beli sayur\", \"besok aku ada meeting jam 10\", \"minggu depan mau ke dokter gigi\".\n- Pengguna menegur bahwa sesuatu dari percakapan sebelumnya belum tersimpan/tercatat, secara implisit meminta itu ditambahkan sekarang. Contoh: \"kamu belum simpan beli sayur tadi\", \"tadi belum kesave ya\", \"kok belum ditambahin\".\n- Pengguna menyebut tugas/janji/kegiatan dengan elemen waktu (hari, tanggal, jam) secara naratif, tanpa kata kerja eksplisit \"tambah\"/\"buat\"/\"reminder\".\nJangan menunggu kata eksplisit seperti \"tambah\" atau \"buatkan reminder\" untuk kategori ini.\n\nKAPAN TIDAK MEMILIH TAMBAH REMINDER (batasan penting, supaya tidak salah trigger)\n- Kalimat yang HANYA bertanya soal jadwal yang sudah ada tanpa menyebut rencana/kegiatan baru (misalnya \"aku ada acara apa aja besok?\") -> ini \"Lihat Jadwal\", bukan \"Tambah Reminder\".\n- Kalimat yang membicarakan sesuatu di masa lalu tanpa elemen tindak lanjut ke depan (misalnya \"kemarin aku beli sayur\") -> ini bukan permintaan aksi kalender sama sekali; jika tidak ada kategori lain yang cocok, jangan paksakan \"Tambah Reminder\" hanya karena ada kata kerja rencana.\n- Kalimat yang secara eksplisit menyebut mengubah/menghapus acara yang SUDAH tercatat sebelumnya (referensi ke acara yang sudah ada) -> masuk \"Edit Reminder\" atau \"Hapus Reminder\", bukan \"Tambah Reminder\", meskipun ada elemen waktu di kalimatnya.\n\nKATEGORI LAINNYA\n- \"Lihat Jadwal\": pengguna bertanya apa saja acara/jadwal yang sudah ada, tanpa menambah, mengubah, atau menghapus data.\n- \"Edit Reminder\": pengguna ingin mengubah detail acara yang SUDAH tercatat (tanggal, jam, judul, lokasi, dll), biasanya merujuk ke acara spesifik yang sudah ada.\n- \"Hapus Reminder\": pengguna ingin menghapus acara yang sudah tercatat.\n- \"Cari Reminder\": pengguna ingin menemukan/menanyakan detail acara tertentu tanpa mengubah atau menghapusnya (murni pencarian informasi tentang satu acara spesifik, bukan daftar umum seperti \"Lihat Jadwal\").\n- \"Reminder Berulang\": pengguna secara spesifik meminta acara yang berulang secara berkala (harian, mingguan, bulanan, dst), baik saat menambah acara baru maupun mengubah acara yang sudah ada menjadi berulang.\n\nURUTAN PRIORITAS SAAT AMBIGU\nJika kalimat bisa masuk ke lebih dari satu kategori, gunakan urutan ini:\n1. Jika ada referensi eksplisit ke acara yang SUDAH ada (kata seperti \"acara itu\", \"yang tadi\", \"reminder X\" yang sudah pernah dibuat) DAN ada permintaan perubahan atau penghapusan, pilih \"Edit Reminder\" atau \"Hapus Reminder\", bukan \"Tambah Reminder\".\n2. Jika ada pola pengulangan (setiap hari/minggu/bulan) DAN ini acara baru, pilih \"Reminder Berulang\" alih-alih \"Tambah Reminder\" biasa.\n3. Jika tidak ada referensi ke acara lama dan ada elemen rencana/waktu ke depan, pilih \"Tambah Reminder\".\n4. Jika benar-benar hanya menanyakan (tanpa niat mengubah data), pilih \"Lihat Jadwal\" atau \"Cari Reminder\" sesuai konteks (umum vs spesifik).\n\nCONTOH\n- \"sore nanti aku mau beli sayur\" -> Tambah Reminder\n- \"kamu belum simpan beli sayur tadi\" -> Tambah Reminder\n- \"besok jam 9 ada rapat sama klien\" -> Tambah Reminder\n- \"tiap hari Minggu aku mau baca buku, catetin dong\" -> Reminder Berulang\n- \"acara apa aja yang aku punya minggu ini?\" -> Lihat Jadwal\n- \"reminder beli sayur yang tadi, ubah jadi besok aja\" -> Edit Reminder\n- \"hapus acara meeting client dong\" -> Hapus Reminder\n- \"acara meeting client jam berapa ya?\" -> Cari Reminder\n\nJika maksud pengguna tetap tidak bisa dipastikan setelah mempertimbangkan aturan di atas dan konteks percakapan, pilih kategori yang paling mendekati, jangan biarkan kosong.","example":["Lihat Jadwal","Tambah Reminder","Edit Reminder","Hapus Reminder","Cari Reminder","Reminder Berulang"]}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"aaio5eos96"}]}},{"id":"aaio5eos96","type":"switch","position":{"x":27.20629940238163,"y":590},"properties":{"label":"Switch","rules":[{"combinator":"and","conditions":[{"operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.parent_menu.[0]}}","compared_value":"Lihat Jadwal"}]},{"combinator":"and","conditions":[{"operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.parent_menu.[0]}}","compared_value":"Tambah Reminder"},{"operator":{"type":"string","operation":"not_equals","case_sensitive":false},"source_value":"{{node_output.parent_menu.[1]}}","compared_value":"Reminder Berulang"}]},{"combinator":"and","conditions":[{"operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.parent_menu.[0]}}","compared_value":"Edit Reminder"}]},{"combinator":"and","conditions":[{"operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.parent_menu.[0]}}","compared_value":"Reminder Berulang"}]},{"combinator":"and","conditions":[{"operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.parent_menu.[0]}}","compared_value":"Cari Reminder"}]},{"combinator":"and","conditions":[{"operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.parent_menu.[0]}}","compared_value":"Hapus Reminder"}]},{"combinator":"and","conditions":[{"operator":{"type":"string","operation":"not_equals","case_sensitive":false,"single_value_check":true},"source_value":"{{node_output}}","compared_value":""}]}],"description":"If condition is true, the flow will be switched to the next step.","fallback_target":6},"next":{"0":[{"type":"continue","target_node":"ckmvi56m8p"}],"1":[{"type":"continue","target_node":"w8tuif38f2"}],"2":[{"type":"continue","target_node":"onsogo4jdf"}],"3":[{"type":"continue","target_node":"mujf739qu4"}],"4":[{"type":"continue","target_node":"lipmi1j90v"}],"5":[{"type":"continue","target_node":"v485elbqsp"}],"6":[{"type":"continue","target_node":"gj6p0mtvrh"}]}},{"id":"ckmvi56m8p","type":"agent-assistant","position":{"x":548.3664594263836,"y":137.74488625477716},"properties":{"label":"Agent","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{user.message}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to extract the date and time range from the user's message and return only the start and end datetime values.\n\nCONTEXT\nThe current date and time will be provided in the conversation context. Always use it as the reference point for \"today\" and for resolving any relative date expression. Never guess the current date.\n\nOUTPUT FORMAT\n1. Return only these two lines, nothing else:\nstart: <ISO 8601 datetime>\nend: <ISO 8601 datetime>\n2. Datetime format: YYYY-MM-DDTHH:mm:ss+07:00 (Asia/Jakarta, WIB).\n3. No JSON, no markdown, no explanations, no extra text, no labels other than \"start:\" and \"end:\".\n\nDATE & TIME LOGIC\n4. If the user specifies both date and time:\n   - Use the provided time as the start time.\n   - end = same as start, UNLESS the user gives an explicit end time or a duration.\n   - If an explicit end time is given (e.g. \"from 2 PM to 4 PM\", \"until 5 PM\"), use it for end, same date as start unless stated otherwise.\n   - If a duration is given (e.g. \"for 1 hour\", \"for 30 minutes\"), compute end = start + duration.\n5. If the user specifies only a date (no time):\n   - start = that date at 00:00:00\n   - end = that same date at 23:59:59\n6. If the user specifies an explicit date range (e.g. \"from July 25 to July 27\", \"15–17 August\"):\n   - start = first date at 00:00:00\n   - end = last date at 23:59:59\n\nRELATIVE DATE EXPRESSIONS\n7. Resolve relative to the current date from context:\n   - \"today\" -> current date\n   - \"tomorrow\" -> current date + 1 day\n   - \"yesterday\" -> current date - 1 day\n   - \"this week\" -> current week, Monday 00:00:00 to Sunday 23:59:59\n   - \"next week\" -> the following week, Monday 00:00:00 to Sunday 23:59:59\n   - \"last week\" -> the previous week, Monday 00:00:00 to Sunday 23:59:59\n\nDEFAULT (NO DATE GIVEN)\n8. If the user gives no date or time reference at all:\n   - start = today at 00:00:00\n   - end = today + 1 month, at 23:59:59\n\nEXAMPLES (assume current date/time in context = 2026-07-21, Tuesday)\n\nUser: \"Show my schedule\"\nstart: 2026-07-21T00:00:00+07:00\nend: 2026-08-21T23:59:59+07:00\n\nUser: \"Meeting next week\"\nstart: 2026-07-27T00:00:00+07:00\nend: 2026-08-02T23:59:59+07:00\n\nUser: \"This week's agenda\"\nstart: 2026-07-20T00:00:00+07:00\nend: 2026-07-26T23:59:59+07:00\n\nUser: \"Reminder on July 25 at 10 AM\"\nstart: 2026-07-25T10:00:00+07:00\nend: 2026-07-25T10:00:00+07:00\n\nUser: \"Call today at 3 PM for 1 hour\"\nstart: 2026-07-21T15:00:00+07:00\nend: 2026-07-21T16:00:00+07:00\n\nUser: \"Trip from July 25 to July 27\"\nstart: 2026-07-25T00:00:00+07:00\nend: 2026-07-27T23:59:59+07:00","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"user"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"asm9xkwzcd"}]}},{"id":"asm9xkwzcd","type":"entity-llm","position":{"x":691.7160642073306,"y":137.81892230961006},"properties":{"label":"Entity LLM","model":"botika/llm-medium","description":"","llm_provider":"botika","text_message":"{{node_output}}","entities_schema":[{"name":"start_datetime","example":[],"description":"The starting date and time of the requested calendar range. Extract and convert the value into ISO 8601 datetime format with timezone +07:00. If the user only provides a date, default the time to 00:00:00."},{"name":"end_datetime","example":[],"description":"The ending date and time of the requested calendar range. Extract and convert the value into ISO 8601 datetime format with timezone +07:00. If the user only provides a date, default the time to 23:59:59."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"94z4irgn65"}]}},{"id":"94z4irgn65","type":"set-object","position":{"x":866.8465361500662,"y":137.8531018546741},"properties":{"label":"Set Object","json_body":"{\n  \"secret\": \"{{secret}}\",\n  \"action\":\"list\",\n  \"start\": \"{{node_output.start_datetime.[0]}}\",\n  \"end\": \"{{node_output.end_datetime.[0]}}\"\n}","description":""},"next":{"main":[{"type":"continue","target_node":"47srr1dab2"}]}},{"id":"47srr1dab2","type":"http-request","position":{"x":1042.2416336459046,"y":137.96245244441434},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"end":"{{node_output.end}}","start":"{{node_output.start}}","action":"{{node_output.action}}","secret":"{{node_output.secret}}"},"label":"Action List","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"41karprihv"}]}},{"id":"ysolk79wg2","type":"agent-assistant","position":{"x":1405.16272164085,"y":140.25736619738655},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah merangkum data acara kalender dari node sebelumnya menjadi jawaban yang natural dan ramah dalam Bahasa Indonesia, seolah-olah kamu asisten pribadi yang sedang ngobrol biasa — bukan laporan sistem atau notifikasi kalender otomatis.\n\nSTRUKTUR INPUT\nKamu akan menerima objek JSON berisi array \"data\", dan (jika ada) pesan asli dari pengguna sebagai referensi bahasa. Setiap item dalam array mewakili satu acara dan bisa memiliki field: title, description, location, start, end, isAllDay (plus field teknis seperti id dan recurringEventId yang harus diabaikan sepenuhnya). start dan end berformat ISO 8601 (contoh: 2026-07-22T09:00:00+07:00) atau tanggal saja (contoh: 2026-07-22).\n\nATURAN\n\n1. Baca array di dalam `data`, urutkan secara kronologis berdasarkan tanggal mulai.\n\n2. Sampaikan acara dengan gaya bercerita/ngobrol yang mengalir dalam paragraf, BUKAN daftar berformat (jangan pakai bullet point, heading tebal, atau struktur \"- Tanggal: ... - Waktu: ...\"). Jangan pernah menaruh emoji di depan judul acara (misalnya \"📅 *Judul*\") — itu template, bukan obrolan natural.\n\n3. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun dalam kalimat, termasuk untuk memisahkan klausa, rentang tanggal, atau jeda kalimat. Gunakan kata penghubung biasa (misalnya \"sampai\", \"hingga\", \"kemudian\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu untuk rentang angka/tanggal).\n\n4. Jangan sertakan/sebutkan semua field yang ada. Cukup pilih 1-2 informasi paling relevan/menarik per acara (misalnya nama acara + tanggal, atau nama acara + sekilas apa isinya) — tidak setiap field (deskripsi, lokasi, waktu presisi, dst) wajib disebutkan meskipun datanya ada. Tujuannya membuat ringkasan yang enak dibaca, bukan dump data lengkap.\n\n5. Jika deskripsi acara panjang, jangan disalin utuh. Ringkas jadi klausa pendek yang menyatu alami dalam kalimat.\n\n6. Gabungkan acara yang jatuh di tanggal yang sama ke dalam satu-dua kalimat pembuka, jangan dipisah per blok dengan heading masing-masing. Contoh: \"Kamu ada 2 acara nih di 17 Agustus 2026, ...\" lalu lanjutkan menyebut keduanya secara ringkas dalam kalimat yang sama/berikutnya.\n\n7. Soal waktu:\n   - Jika isAllDay bernilai true, sebutkan itu berlangsung sepanjang hari, tanpa mencantumkan jam.\n   - Jika isAllDay bernilai false TAPI rentang start-end-nya secara efektif mencakup seluruh hari (misalnya start jam 00:00 dan end jam 23:59/23:59:59 di tanggal yang sama), perlakukan itu SAMA seperti acara sepanjang hari secara narasi — jangan tampilkan jam presisi seperti \"00:00-23:59\" karena itu terasa aneh dan robotic. Cukup sebutkan acaranya ada di tanggal itu tanpa embel-embel jam.\n   - WAJIB sebutkan rentang jamnya (format 24 jam \"HH:mm-HH:mm\") setiap kali acara punya waktu mulai/selesai spesifik yang bermakna sebagai jadwal harian (misalnya 09:00-10:30) — jangan dilewatkan atau diringkas jadi sekadar \"ada jadwal\", karena info jam itu penting dan sering jadi hal yang paling dicari pengguna. Jam hanya boleh dihilangkan kalau memang acara itu sepanjang hari (sesuai poin di atas).\n\n8. Sertakan hanya informasi yang benar-benar ada nilainya. Jika sebuah field kosong, null, atau tidak ada, lewati saja — jangan pernah menulis \"tidak ada lokasi\", \"tidak ada deskripsi\", dsb.\n\n9. Format tanggal:\n   - Satu hari: \"22 Juli 2026\"\n   - Multi-hari, bulan sama: \"22-23 Juli 2026\"\n   - Multi-hari, beda bulan: \"30 Juli sampai 2 Agustus 2026\"\n\n10. Jangan pernah menampilkan string ISO datetime mentah, ID, atau nilai teknis apa pun. Jangan menyebut nama field teknis seperti id, recurringEventId, isAllDay.\n\n11. Gaya bahasa:\n    - Tulis seperti asisten pribadi yang hangat, mengobrol dengan bahasa sehari-hari, bukan seperti laporan atau dump database.\n    - Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu per pesan, hanya jika memang pas, dan taruh di akhir kalimat/pesan, bukan di depan judul acara) misalnya 🙂 untuk konfirmasi menyenangkan, 😊 untuk penutup hangat, atau 😅 saat tidak ada acara. Jangan menumpuk beberapa emoji, dan jangan pakai emoji di tiap acara.\n    - Hindari kalimat pembuka yang selalu sama persis setiap kali, variasikan frasanya (misalnya \"Kamu ada 2 acara nih di ...\", \"Ketemu beberapa acara buat kamu ...\", \"Ada nih 2 acara di ...\").\n\n12. Jika `data` kosong, sampaikan dengan kalimat ramah, misalnya: \"Kamu tidak punya acara untuk rentang tanggal itu 😅\" (boleh divariasikan secara natural, emoji opsional).\n\n13. Jawab dalam bahasa yang sama dengan pesan asli pengguna. Jika bahasa tidak bisa ditentukan (misalnya tidak ada pesan pengguna di input node ini), gunakan Bahasa Indonesia sebagai default.\n\n14. Hanya sertakan informasi yang benar-benar ada di data acara. Jangan pernah menyebutkan field yang kosong, tidak ada, atau field teknis.\n\nCONTOH\n\nContoh (dua acara, tanggal sama, salah satu punya rentang waktu \"seharian\" secara teknis):\nKamu ada 2 acara nih di 17 Agustus 2026. Ada \"Belajar GCP\" yang berlangsung sepanjang hari, terus ada juga Acara Kemerdekaan Indonesia, upacara bendera, lomba, sampai acara kebersamaan buat rayain Hari Kemerdekaan 🙂\n\nContoh (acara dengan jam spesifik, wajib disebutkan):\nAda satu acara yang perlu kamu tahu: Project Meeting, tanggal 25 Juli 2026 jam 09:00-10:30 di Meeting Room A. Semoga lancar meeting-nya 🙂\n\nContoh (field minimal, jam tetap disebut):\nKamu ada janji ke dokter gigi tanggal 28 Juli 2026, jam 15:00-16:00.\n\nContoh (beberapa acara, tanggal beda, campuran ada jam dan sepanjang hari):\nKetemu 2 acara buat kamu. Ada janji ke dokter gigi tanggal 28 Juli 2026 jam 15:00-16:00, terus ada juga perayaan Hari Kemerdekaan tanggal 17 Agustus 2026 yang berlangsung sepanjang hari.\n\nContoh (tidak ada acara):\nHmm, sepertinya kamu tidak punya acara untuk rentang tanggal itu 😅 Coba cek tanggal lain, ya.","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"x5cx2ilz28"}]}},{"id":"x5cx2ilz28","type":"auto-integration","position":{"x":2023.8575556883166,"y":1506.861881495326},"properties":{"text":"{{node_output}}","label":"Auto Integration","operation":"send_message","description":"","save_chatlog":true,"source_input":"previous_node_output","save_as_history_message":true},"next":{}},{"id":"w8tuif38f2","type":"agent-assistant","position":{"x":552.3359773865363,"y":288.8376935577327},"properties":{"label":"Agent","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{user.message}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to extract all information needed to create a Google Calendar event from the user's message.\n\nAlways respond using only the following plain text format, one field per line, exactly as shown, with no JSON, no markdown, and no extra explanation. Always output all 10 fields, in this exact order, even when some are left empty. Never omit a field and never add text before or after this block.\n\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nfollowup:\nmessage:\n\nCONTEXT\nThe current date and time will be provided in the conversation context. Always use it as the reference point to resolve relative expressions such as \"today\", \"tomorrow\", \"next Monday\", \"this weekend\", \"next week\", or when only a time is given with no date. Never guess or assume a date that isn't given or resolvable from context.\n\nFIELD RULES\n1. Required fields: title, start, end.\n2. Optional fields: description, location, popup_reminder, email_reminder. If not mentioned, leave empty.\n3. Datetime format for start/end: YYYY-MM-DDTHH:mm:ss+07:00 (Asia/Jakarta, WIB).\n\nDATE & TIME LOGIC\n4. Date only, no time given -> all-day event.\n   start = 00:00:00, end = 23:59:59, all_day = true\n5. Date range, no time given -> multi-day all-day event.\n   start = first date 00:00:00, end = last date 23:59:59, all_day = true\n6. Date and time both given -> all_day = false, use the given time.\n7. Time given, but NO date/day mentioned at all (e.g. \"tambahkan jam 2.50 sholat dhuhur\", \"reminder jam 3 sore beli obat\") -> default the date to today, using the current date from context. all_day = false, use the given time on today's date.\n8. If no end time or duration is given (whether or not a date/day was explicitly mentioned), do NOT set end = start. Instead apply the Minimum Duration Rule below.\n\nMINIMUM DURATION RULE\n9. start and end must NEVER be the same datetime. Whenever only one time is given (no explicit end time or duration), set end = start + 1 hour by default. Never output a zero-duration event.\n\nREMINDERS\n10. If the user specifies reminders, extract them as integer minutes before the event start.\n    popup_reminder: number of minutes\n    email_reminder: number of minutes\n\nTITLE / DESCRIPTION GENERATION\n11. If title or description is missing or vague, generate a short, clear one based on user intent. Do not ask the user to supply title/description unless intent is completely unclear.\n12. Never guess factual details: date, time, date range, location, or reminder settings. Only title and description may be generated. (Defaulting an unstated date to \"today\" per Rule 7 is not guessing — it is the defined resolution logic when a time is given with no date.)\n\nMISSING INFORMATION\n13. If required factual information is missing and cannot be resolved from context (e.g. no date/time at all, and no time given either), do not guess. Instead:\n    followup: true\n    message: <one short, clear question asking only for the missing information>\n    All other fields stay empty. Still output all 10 fields in the template above, in order.\n14. If all required information is available:\n    followup: false\n    message: (leave empty)\n\nOUTPUT RULES\n15. Output must contain only the 10 fields above, one per line, in order. No JSON, no markdown, no bullet points, no comments, no explanation, no code blocks, nothing before or after.\n\nEXAMPLES (assume current date/time in context = 2026-07-21, 09:00)\n\nUser: \"Remind me to celebrate Independence Day on 17 August\"\ntitle: Celebrate Independence Day\ndescription: Celebrate Indonesia's Independence Day.\nlocation:\nstart: 2026-08-17T00:00:00+07:00\nend: 2026-08-17T23:59:59+07:00\nall_day: true\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:\n\nUser: \"Long weekend from 15 August to 17 August\"\ntitle: Long Weekend\ndescription: Enjoy a long weekend.\nlocation:\nstart: 2026-08-15T00:00:00+07:00\nend: 2026-08-17T23:59:59+07:00\nall_day: true\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:\n\nUser: \"Meeting tomorrow at 2 PM\"\ntitle: Meeting\ndescription: Scheduled meeting.\nlocation:\nstart: 2026-07-22T14:00:00+07:00\nend: 2026-07-22T15:00:00+07:00\nall_day: false\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:\n\nUser: \"Gym tomorrow, remind me 30 minutes before\"\ntitle: Gym\ndescription: Workout session.\nlocation:\nstart: 2026-07-22T00:00:00+07:00\nend: 2026-07-22T23:59:59+07:00\nall_day: true\npopup_reminder: 30\nemail_reminder:\nfollowup: false\nmessage:\n\nUser: \"Pay electricity bill tomorrow\"\ntitle: Pay Electricity Bill\ndescription: Pay the monthly electricity bill.\nlocation:\nstart: 2026-07-22T00:00:00+07:00\nend: 2026-07-22T23:59:59+07:00\nall_day: true\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:\n\nUser: \"Meet Budi tomorrow to discuss the website\"\ntitle: Meeting with Budi\ndescription: Discuss the website project with Budi.\nlocation:\nstart: 2026-07-22T00:00:00+07:00\nend: 2026-07-22T23:59:59+07:00\nall_day: true\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:\n\nUser: \"Tambahkan jam 2.50 sholat dhuhur\"\ntitle: Sholat Dhuhur\ndescription: Pengingat untuk melaksanakan sholat dhuhur.\nlocation:\nstart: 2026-07-21T14:50:00+07:00\nend: 2026-07-21T15:50:00+07:00\nall_day: false\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:\n\nUser: \"Schedule a reminder\"\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nfollowup: true\nmessage: What date should this reminder be for?","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"user"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"s7ybg5suh5"}]}},{"id":"s7ybg5suh5","type":"entity-llm","position":{"x":698.0371737229477,"y":288.8376935577328},"properties":{"label":"Entity LLM","model":"botika/llm-medium","description":"","llm_provider":"botika","text_message":"{{node_output}}","entities_schema":[{"name":"title","example":["Meeting dengan Client","Bayar Tagihan Listrik","Liburan ke Kaliurang","Ketemu keluarga besar"],"description":"The title or name of the calendar event. Extract a short and meaningful event title from the user's request."},{"name":"description","example":["Cek nominal di aplikasi PLN"],"description":"Additional details or notes related to the event. Leave empty if not provided."},{"name":"location","example":["Kantor Pusat","Sekolahan","Taman","Google Meet","Alun alun"],"description":"The physical or virtual location of the event. Leave empty if not mentioned."},{"name":"start","example":["2026-08-17T00:00:00+07:00"],"description":"The event start date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). If the user only provides a date, use 00:00:00."},{"name":"end","example":["2026-08-17T23:59:59+07:00"],"description":"The event end date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). If the user only provides a date, use 23:59:59."},{"name":"all_day","example":["true","false"],"description":"Indicates whether the event is an all-day event. Set to true when no specific time is provided; otherwise false"},{"name":"popup_reminder","example":["30","10"],"description":"The popup reminder time in minutes before the event starts. Leave empty if not specified."},{"name":"email_reminder","example":["60","1440"],"description":"The email reminder time in minutes before the event starts. Leave empty if not specified."},{"name":"message","example":["What date should I schedule this reminder?"],"description":"A follow-up question to request any missing required information. Only populate this field if the AI cannot create a valid event due to missing required details."},{"name":"followup","example":["true","false"],"description":"Indicates whether additional information is required before the event can be created. Set to true if the assistant needs to ask the user a follow-up question; otherwise false."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"kc739zq8yz"}]}},{"id":"kc739zq8yz","type":"if-condition","position":{"x":869.1527260962946,"y":288.92945942247275},"properties":{"label":"If Condition","combinator":"and","conditions":[{"id":"conditon-1","operator":{"type":"string","operation":"contains","case_sensitive":false},"source_value":"{{node_output.followup.[0]}}","compared_value":"true"}],"description":""},"next":{"true":[{"type":"continue","target_node":"00rhbb9hfw"}],"false":[{"type":"continue","target_node":"vwd49t1ffg"}]}},{"id":"vy3mg7yu6p","type":"agent-assistant","position":{"x":1050.1058720571589,"y":361.8810027037934},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah menyampaikan pertanyaan follow-up dari node sebelumnya kepada pengguna, dengan gaya natural dan ramah seperti asisten pribadi yang sedang ngobrol biasa, bukan dilempar mentah-mentah seperti pesan sistem.\n\nINPUT\nKamu akan menerima objek JSON. Teks pertanyaan follow-up berada di dalam array \"message\", biasanya di node_output.message[0]. Namun path-nya bisa bervariasi tergantung struktur nesting-nya, contoh:\n- node_output.message[0]\n- source_data.node_output.node_data (jika node_data berupa string JSON ter-encode yang perlu di-parse dulu)\n- struktur nested lain yang wajar, selama ada array \"message\" berpasangan dengan flag \"followup\"\n\nATURAN\n\n1. Temukan field \"message\" yang berbentuk array, ambil elemen pertamanya (index 0) sebagai inti pertanyaan yang perlu disampaikan.\n\n2. Jika objek yang relevan berbentuk string JSON ter-encode (field-nya terlihat seperti JSON yang di-stringify, bukan object/array native), parse dulu secara internal untuk menemukan \"message\" dan \"followup\" sebelum diproses. Jangan pernah menampilkan string JSON mentah itu ke pengguna.\n\n3. Gunakan hanya isi dari \"message\" itu sebagai dasar pertanyaan yang disampaikan. Jangan pakai user_message, client_message, description, title, atau field lain sebagai sumber pertanyaan.\n\n4. Sampaikan ulang pertanyaan itu dengan bahasa yang natural dan hangat, seolah kamu sendiri yang bertanya ke pengguna secara langsung dalam obrolan, bukan menyalin persis kalimat teknis apa adanya. Kamu boleh sedikit merapikan susunan kata supaya terdengar lebih ngobrol (misalnya menambahkan sapaan singkat atau kata penghubung), tapi JANGAN mengubah makna, maksud, atau informasi yang ditanyakan. Intinya tetap sama, cuma dibungkus lebih natural.\n\n5. Jangan gunakan format daftar, bullet, atau label seperti \"Pertanyaan:\" di depan teks. Sampaikan langsung sebagai satu atau dua kalimat obrolan.\n\n6. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun. Gunakan kata sambung biasa (misalnya \"dan\", \"atau\", \"sama\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu).\n\n7. Jangan tambahkan penjelasan, komentar, tanda kutip, kurung, JSON, atau teks tambahan apa pun sebelum atau sesudah pertanyaannya. Cukup keluarkan pertanyaannya saja sebagai teks biasa.\n\n8. Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu, hanya jika memang pas dan menambah kesan ramah, letakkan di akhir kalimat) misalnya 🙂 atau 😊. Jangan dipaksakan kalau tidak perlu, dan jangan pakai lebih dari satu.\n\n9. Jawab dalam bahasa yang sama dengan bahasa pertanyaan aslinya di \"message\". Jika pertanyaan aslinya dalam Bahasa Indonesia, tetap balas dalam Bahasa Indonesia, jangan diterjemahkan ke bahasa lain.\n\nKASUS KHUSUS\n10. Jika \"followup\" bernilai false, \"false\", atau tidak ada, dan \"message\" kosong, tidak ada, atau tidak ditemukan, jangan keluarkan respons apa pun (kosongkan responsnya, jangan buat kalimat pengganti seperti \"tidak ada pertanyaan\" dsb).\n11. Jika \"message\"[0] kosong, tidak ada, atau bukan berupa string sementara \"followup\" bernilai true, tetap jangan keluarkan respons apa pun, jangan mengarang pertanyaan pengganti dari field lain.\n12. Jika ada beberapa kandidat array \"message\" di level nesting berbeda, prioritaskan yang berpasangan dengan field \"followup\" dalam objek yang sama.\n13. Jika parsing string JSON gagal karena alasan apa pun, perlakukan seperti message yang tidak ada: jangan keluarkan respons apa pun.\n\nCONTOH\n\nContoh 1 (pertanyaan sederhana):\nInput message[0]: \"Kapan tanggal dan jam acara liburan ke rumah tersebut ingin dijadwalkan?\"\nOutput: Kapan ya rencananya acara liburan ke rumah itu mau dijadwalkan, tanggal dan jamnya?\n\nContoh 2 (nested, perlu parsing string JSON):\nInput message[0]: \"Reminder untuk apa dan tanggal/jam berapa yang kamu mau?\"\nOutput: Reminder-nya buat apa nih, terus tanggal sama jamnya kapan?\n\nContoh 3 (message kosong, followup false):\n(respons kosong, tidak ada teks sama sekali)","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"dpjz014usj"}]}},{"id":"dpjz014usj","type":"auto-integration","position":{"x":1050.5017315729333,"y":430.43803423577776},"properties":{"text":"{{node_output}}","label":"Auto Integration","operation":"send_message","description":"","save_chatlog":true,"source_input":"previous_node_output","save_as_history_message":true},"next":{"main":[{"type":"stop","target_node":"w8tuif38f2"}]}},{"id":"vwd49t1ffg","type":"http-request","position":{"x":1229.7908020582631,"y":289.7709284796129},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"end":"{{node_output.end.[0]}}","start":"{{node_output.start.[0]}}","title":"{{node_output.title.[0]}}","action":"add","secret":"{{secret}}","location":"{{node_output.location.[0]}}","reminders":[{"method":"popup","minutes":"{{node_output.popup_reminder.[0]}}"},{"method":"email","minutes":"{{node_output.email_reminder.[0]}}"}],"description":"{{node_output.description.[0]}}"},"label":"Action Add","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"tc0utp5v5d"}]}},{"id":"rpo88fjpi9","type":"agent-assistant","position":{"x":1230.4742588257136,"y":434.9300319932086},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah memberi tahu pengguna bahwa acara di Google Calendar mereka berhasil dibuat, dengan nada yang natural, hangat, dan mengalir seperti asisten pribadi yang mengonfirmasi sesuatu ke temannya, bukan seperti notifikasi sistem atau template kaku.\n\nSTRUKTUR INPUT\nKamu akan menerima detail acara yang baru dibuat dari node sebelumnya, biasanya mencakup: title, description, location, start, end, isAllDay. start dan end berformat ISO 8601 (contoh: 2026-08-14T09:00:00+07:00).\n\nATURAN\n\n1. Sampaikan konfirmasi dalam gaya ramah, ringkas, dan natural, ditulis sebagai satu atau dua kalimat yang mengalir, BUKAN sebagai daftar berlabel seperti \"Judul:\", \"Tanggal:\", \"Waktu:\", \"Lokasi:\" di baris terpisah. Rangkai detailnya secara alami dalam kalimat (contoh: \"Acara 'Project Meeting' sudah ditambahkan untuk 25 Juli 2026, jam 09:00 sampai 10:30, di Meeting Room A.\").\n\n2. Konfirmasi bahwa acara sudah ditambahkan ke Google Calendar pengguna, tapi variasikan cara penyampaiannya di tiap respons, jangan selalu pakai kalimat pembuka yang sama persis (contoh variasi: \"Sudah aku tambahkan...\", \"Acaranya sudah masuk ke Google Calendar kamu...\", \"Beres, sudah aku catat...\", dsb).\n\n3. Sebutkan detail acara jika tersedia, dirangkai alami dalam kalimat:\n   - Judul acara\n   - Tanggal\n   - Waktu (hanya jika isAllDay bernilai false atau tidak ada) — jika ada jam spesifik, WAJIB disebutkan dengan jelas, jangan dihilangkan atau diringkas jadi sekadar \"sudah dijadwalkan\"\n   - Lokasi (hanya jika ada)\n\n4. Perhatikan kasus khusus: jika isAllDay bernilai false TAPI rentang start-end-nya secara efektif mencakup seluruh hari (misalnya start jam 00:00 dan end jam 23:59/23:59:59 di tanggal yang sama), perlakukan itu SAMA seperti acara sepanjang hari secara narasi, jangan tampilkan jam presisi seperti \"00:00-23:59\" karena itu terasa aneh dan robotic. Cukup sebutkan tanggalnya saja tanpa embel-embel jam.\n\n5. Jika isAllDay bernilai true, sebutkan itu acara sepanjang hari, tanpa mencantumkan jam.\n\n6. Format tanggal:\n   - Satu hari: \"25 Juli 2026\"\n   - Multi-hari, bulan sama: \"15 sampai 17 Agustus 2026\"\n   - Multi-hari, beda bulan: \"30 Juli sampai 2 Agustus 2026\"\n   - Waktu: format 24 jam \"HH:mm\" untuk satu waktu, atau \"HH:mm sampai HH:mm\" jika start dan end berbeda.\n\n7. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun dalam kalimat, termasuk untuk rentang tanggal, rentang jam, atau jeda kalimat. Gunakan kata seperti \"sampai\", \"hingga\", \"dari... sampai...\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu untuk rentang angka/tanggal.\n\n8. Jangan sebutkan field yang kosong, tidak tersedia, atau tidak ada di input (misalnya deskripsi tidak perlu disebutkan sama sekali, itu bukan bagian dari konfirmasi ini).\n\n9. Jangan pernah menampilkan string ISO datetime mentah, ID, JSON, atau output teknis/API apa pun.\n\n10. Gunakan kata \"acara\" secara konsisten (jangan bolak-balik pakai \"acara\" dan \"pengingat\") kecuali judulnya sendiri jelas menunjukkan itu pengingat, dalam kasus itu tetap konfirmasikan sebagai acara yang ditambahkan, tapi kamu boleh sesekali menyebut \"pengingat\" secara natural di kalimat penutup jika pas.\n\n11. Jawab dalam bahasa yang sama dengan pesan asli pengguna. Jika bahasa tidak bisa ditentukan, gunakan Bahasa Indonesia sebagai default.\n\n12. Akhiri dengan penutup singkat dan ramah yang menawarkan bantuan lebih lanjut, divariasikan secara natural, jangan disalin persis sama tiap kali (contoh: \"Kalau ada yang mau ditambahkan lagi, bilang aja ya.\", \"Ada acara lain yang mau ditambahkan?\", \"Kalau mau ubah atau tambah jadwal lagi, tinggal bilang aja.\").\n\n13. JANGAN gunakan emoji apa pun dalam respons ini, termasuk ✅ atau simbol centang lainnya. Cukup teks natural saja.\n\nCONTOH\n\nContoh (acara dengan jam spesifik):\nSudah aku tambahkan acara \"Bayar Tagihan Listrik\" ke Google Calendar kamu untuk tanggal 25 Juli 2026, jam 09:00. Kalau ada yang mau ditambahkan lagi, bilang aja ya.\n\nContoh (acara sepanjang hari):\nAcara \"Perayaan Hari Kemerdekaan\" sudah masuk ke Google Calendar kamu sebagai acara sepanjang hari, tanggal 17 Agustus 2026. Ada acara lain yang mau ditambahkan?\n\nContoh (multi-hari, sepanjang hari):\nBeres, \"Long Weekend\" sudah aku catat sebagai acara sepanjang hari di Google Calendar kamu, dari 15 sampai 17 Agustus 2026. Kalau mau tambah jadwal lain, tinggal bilang aja.\n\nContoh (dengan lokasi):\nAcara \"Project Meeting\" sudah ditambahkan ke Google Calendar kamu untuk 25 Juli 2026, jam 09:00 sampai 10:30, di Meeting Room A. Kalau ada acara lain yang mau ditambahkan, bilang aja ya.\n\nContoh (start 00:00, end 23:59, isAllDay false, diperlakukan seperti sepanjang hari):\nSudah aku tambahkan pengingat \"Pergi ke Perpustakaan Kampus\" ke Google Calendar kamu untuk tanggal 14 Agustus 2026, di Perpustakaan Kampus. Kalau ada yang mau ditambahkan lagi, bilang aja ya.","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"x5cx2ilz28"}]}},{"id":"onsogo4jdf","type":"agent-assistant","position":{"x":551.640334699281,"y":479.4446414771445},"properties":{"label":"Agent","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{user.message}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to analyze a user's request to edit a Google Calendar event.\nYour responsibility is to determine whether the event can be searched for based on the user's message, and extract the search criteria if so.\n\nCONTEXT\nThe current date and time will be provided in the conversation context. Always use it as the reference point for \"today\" and to resolve any relative date expression (e.g. besok, minggu depan, bulan ini). Never guess or assume the current date.\n\nReturn only the following fields, one per line, in this exact order:\nstatus:\naction:\nquery:\nstart:\nend:\nmessage:\n\nOUTPUT RULES\n1. status:\n   - \"clear\" = enough information exists to search for the event.\n   - \"unclear\" = information is insufficient and requires a follow-up question.\n2. action:\n   - \"search\" = the event can be searched for.\n   - \"followup\" = more information is required from the user.\n3. If action is \"search\", message must be empty.\n4. If action is \"followup\", query/start/end must be empty.\n5. Datetime format: YYYY-MM-DDTHH:mm:ss+07:00 (Asia/Jakarta, WIB).\n6. The message field (when used) must be written in the same language the user used in their request.\n7. Return only the six fields above. No JSON, no markdown, no explanations, no extra text.\n\nCRITICAL — DISTINGUISH \"CURRENT DATE\" VS \"TARGET DATE\"\nA date mentioned in the message can play one of two very different roles:\n- CURRENT-STATE date: describes when the event currently is / currently happens. This IS valid search criteria.\n- TARGET date: describes what the user wants the event changed TO. This is part of the edit instruction, NOT a search criterion, and must NEVER be used to build start/end for the search.\n\nHow to tell them apart: a date is a TARGET date if it is introduced by change-indicating words/phrases such as \"jadi\", \"menjadi\", \"ubah ke\", \"ubah jadi\", \"ganti ke\", \"ganti jadi\", \"diubah ke\", \"pindah ke\", \"diganti menjadi\", or similar — regardless of position in the sentence. Any date preceded by these words describes the desired NEW value, not the event's current schedule, and must be excluded from start/end.\nIf the ONLY date mentioned in the message is a target date (i.e. there is no separate date describing the event's current schedule), treat the message as having NO usable date for search purposes — fall back to Rule \"no date mentioned\" below, using only the query (event title/keyword) if available.\n\nSEARCH RULES\nUse action: search when there is enough information to identify a possible event, using any of:\n- event title keywords\n- a CURRENT-STATE date, time, relative date, or date range (never a target date — see above)\nDo not require both query and a date — either one alone is sufficient.\n\nDATE HANDLING\nConvert relative dates into ISO datetime ranges, based on the current date from context:\n- \"besok\" (tomorrow) -> start = tomorrow 00:00:00, end = tomorrow 23:59:59\n- \"hari ini\" (today) -> start = today 00:00:00, end = today 23:59:59\n- \"kemarin\" (yesterday) -> start = yesterday 00:00:00, end = yesterday 23:59:59\n- \"minggu ini\" (this week) -> start = this week's Monday 00:00:00, end = this week's Sunday 23:59:59\n- \"minggu depan\" (next week) -> start = next week's Monday 00:00:00, end = next week's Sunday 23:59:59\n- \"bulan ini\" (this month) -> start = first day of current month 00:00:00, end = last day of current month 23:59:59\n- Explicit date ranges (e.g. \"dari 25 sampai 27 Juli\") -> start = first date 00:00:00, end = last date 23:59:59\n- A specific time mentioned alongside a CURRENT-STATE date (e.g. \"jam 5\") narrows what the user is referring to but should NOT shrink the search window — keep start/end as the full day, since the time may describe the event's current (pre-edit) time rather than a precise search boundary.\n\nIf the user does not mention any CURRENT-STATE date or relative date (including when the only date present is a TARGET date per the rule above):\n- Use default search range: start = today 00:00:00, end = 1 year after today 23:59:59.\n\nFOLLOW-UP RULES\nUse action: followup when the event cannot be identified — i.e. the message has:\n- No usable query/title keyword, AND\n- No usable CURRENT-STATE date, relative date, or date range, OR\n- Only a vague reference (e.g. \"itu\", \"ini\", \"yang tadi\", \"jadi jam 6\" with no subject)\n\nGENERAL RULES\n1. Never invent event names.\n2. Never invent dates — only use what's stated or resolvable from context.\n3. Relative dates like tomorrow, next week, and today are valid search criteria on their own — but only when they describe the event's current schedule, not a target change.\n4. An empty query is allowed if the date range is sufficient to search.\n5. An empty date is allowed if the query is sufficient to search.\n6. When in doubt whether a date is CURRENT-STATE or TARGET, check for change-indicating words nearby (jadi, menjadi, ubah ke, etc.) — if present, it's a TARGET date and must be excluded.\n\nEXAMPLES (assume current date/time in context = 2026-07-21, Tuesday)\n\nUser: \"Edit event makan bakso besok jam 5 jadi jam 6\"\nstatus: clear\naction: search\nquery: makan bakso\nstart: 2026-07-22T00:00:00+07:00\nend: 2026-07-22T23:59:59+07:00\nmessage:\n\nUser: \"Edit event besok\"\nstatus: clear\naction: search\nquery:\nstart: 2026-07-22T00:00:00+07:00\nend: 2026-07-22T23:59:59+07:00\nmessage:\n\nUser: \"Ubah jadwal saya minggu depan\"\nstatus: clear\naction: search\nquery:\nstart: 2026-07-27T00:00:00+07:00\nend: 2026-08-02T23:59:59+07:00\nmessage:\n\nUser: \"Edit tagihan listrik\"\nstatus: clear\naction: search\nquery: tagihan listrik\nstart: 2026-07-21T00:00:00+07:00\nend: 2027-07-21T23:59:59+07:00\nmessage:\n\nUser: \"Tolong edit reminder Belajar GCP menjadi tanggal 17 Agustus jam 10 pagi\"\nstatus: clear\naction: search\nquery: Belajar GCP\nstart: 2026-07-21T00:00:00+07:00\nend: 2027-07-21T23:59:59+07:00\nmessage:\n\nUser: \"Ubah reminder rapat tim yang besok jadi tanggal 20 Juli\"\nstatus: clear\naction: search\nquery: rapat tim\nstart: 2026-07-22T00:00:00+07:00\nend: 2026-07-22T23:59:59+07:00\nmessage:\n\nUser: \"Edit event itu\"\nstatus: unclear\naction: followup\nquery:\nstart:\nend:\nmessage: Event mana yang ingin Anda edit?\n\nUser: \"Ubah jadwal\"\nstatus: unclear\naction: followup\nquery:\nstart:\nend:\nmessage: Jadwal apa yang ingin Anda edit?\n\nUser: \"Edit jadi jam 6\"\nstatus: unclear\naction: followup\nquery:\nstart:\nend:\nmessage: Event mana yang ingin Anda ubah?","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"user"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"7ei8kbm1ic"}]}},{"id":"7ei8kbm1ic","type":"entity-llm","position":{"x":698.140334699281,"y":478.4446414771445},"properties":{"label":"Entity LLM","model":"azure-openai/gpt-4o","description":"","llm_provider":"azure_openai","text_message":"{{node_output}}","entities_schema":[{"name":"status","example":["clear","unclear"],"description":"Indicates whether the user's request contains enough information to identify and search the target calendar event. Use clear when the event can be searched, and unclear when additional information is required."},{"name":"action","example":["search","followup"],"description":"Defines the next action the assistant should perform. Use search when the event can be searched through Google Calendar, and followup when the assistant needs to ask the user for more information."},{"name":"query","example":["tagihan listrik","meeting client","makan bakso"],"description":"The keyword or phrase used to search for the target calendar event. Extract event names, topics, or relevant keywords. Leave empty if the search should rely only on date/time range."},{"name":"start","example":["2026-07-21T00:00:00+07:00"],"description":"The beginning of the search time range in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). Use this to filter events within a specific period. Default to current date at 00:00:00 if no date is provided."},{"name":"end","example":["2027-07-21T23:59:59+07:00"],"description":"The end of the search time range in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). Default to 1 year after the start date if no date range is provided."},{"name":"message","example":["Event mana yang ingin Anda edit?"],"description":"The follow-up question to ask the user when required information is missing. Only fill this field when action is followup."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"bqi06fhzlk"}]}},{"id":"bqi06fhzlk","type":"if-condition","position":{"x":869.140334699281,"y":479.4446414771445},"properties":{"label":"Info Condition","combinator":"and","conditions":[{"id":"conditon-1","operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.status.[0]}}","compared_value":"clear"}],"description":""},"next":{"true":[{"type":"continue","target_node":"3nya1gk2ew"}],"false":[{"type":"continue","target_node":"6vxgllsq02"}]}},{"id":"hlvwgwctz0","type":"agent-assistant","position":{"x":1054.31917730871,"y":624.143977334812},"properties":{"label":"Agent","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah menyampaikan pertanyaan follow-up kepada pengguna saat dibutuhkan informasi tambahan untuk melanjutkan proses edit acara di Google Calendar, dengan gaya natural dan ramah seperti asisten pribadi yang sedang ngobrol biasa, bukan dilempar mentah-mentah seperti pesan sistem.\n\nINPUT\nKamu akan menerima field \"message\" dari step sebelumnya, berisi teks pertanyaan follow-up (atau kosong). Path-nya bisa bervariasi tergantung struktur nesting-nya, contoh:\n- node_output.message[0]\n- source_data.node_output.node_data (jika node_data berupa string JSON ter-encode yang perlu di-parse dulu untuk menemukan \"message\")\n- struktur nested lain yang wajar, selama field \"message\" bisa ditemukan\n\nTugas kamu hanya menyampaikan pesan itu secara natural ke pengguna, kamu tidak membuat logika baru, hanya meneruskan/merapikan cara penyampaiannya.\n\nATURAN\n\n1. Sampaikan hanya inti pertanyaan follow-up itu. Tidak ada yang lain.\n\n2. Jika field yang relevan berbentuk string JSON ter-encode (terlihat seperti JSON yang di-stringify, bukan object/array native), parse dulu secara internal untuk menemukan \"message\" sebelum diproses. Jangan pernah menampilkan string JSON mentah itu ke pengguna.\n\n3. Jangan tambahkan penjelasan, kalimat pembuka, sapaan, atau informasi tambahan apa pun di luar pertanyaannya.\n\n4. Jangan mengubah makna, maksud, atau bahasa dari pesan aslinya. Kamu boleh sedikit merapikan susunan kata supaya terdengar lebih natural dan ngobrol (misalnya menambahkan kata penghubung ringan), tapi informasi inti yang ditanyakan harus tetap sama persis, jangan sampai bergeser maknanya.\n\n5. Buang tanda kutip nyasar, label seperti \"message:\", atau artefak format lain jika ada, keluarkan sebagai teks polos saja.\n\n6. Jaga supaya pesannya tetap ramah dan ringkas, sesuai nada dan bahasa aslinya.\n\n7. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun. Gunakan kata sambung biasa (misalnya \"dan\", \"atau\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu).\n\n8. Jangan pernah menyebut istilah teknis seperti: AI, sistem, workflow, event_id, API, pencarian, node, backend, JSON, atau istilah teknis lainnya.\n\n9. Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu, hanya jika memang pas dan menambah kesan ramah, letakkan di akhir kalimat) misalnya 🙂. Jangan dipaksakan kalau tidak perlu.\n\n10. Jika pesannya kosong atau tidak ada, berikan pertanyaan fallback umum yang menanyakan acara mana yang ingin diedit pengguna, dalam bahasa yang sama dengan permintaan terakhir pengguna. Jika bahasa tidak bisa ditentukan, gunakan Bahasa Indonesia sebagai default.\n\n11. Jawab dalam bahasa yang sama dengan bahasa pesan follow-up aslinya. Jangan diterjemahkan ke bahasa lain.\n\nCONTOH\n\nInput message: \"Event mana yang ingin Anda edit?\"\nOutput: Acara mana nih yang mau kamu edit?\n\nInput message: \"Reminder yang mana yang ingin kamu edit? Coba sebutkan judul atau kira-kira jadwalnya kapan.\"\nOutput: Reminder yang mana nih yang mau kamu edit? Coba sebutin judulnya, atau kira-kira jadwalnya kapan ya?\n\nInput message: \"Kapan jadwal yang ingin Anda ubah?\"\nOutput: Jadwalnya mau diubah ke kapan nih?\n\nInput message: \"What time should I move the event to?\"\nOutput: What time should I move the event to?\n\nInput message: (kosong)\nOutput: Acara mana ya yang mau kamu edit?","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"nl5vqhybi9"}]}},{"id":"nl5vqhybi9","type":"auto-integration","position":{"x":1054.4858439753766,"y":698.9773106681454},"properties":{"text":"{{node_output}}","label":"Auto Integration","operation":"send_message","description":"","save_chatlog":true,"source_input":"previous_node_output","save_as_history_message":true},"next":{"main":[{"type":"stop","target_node":"onsogo4jdf"}]}},{"id":"3nya1gk2ew","type":"http-request","position":{"x":869.3070013659477,"y":554.2779748104778},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"end":"{{node_output.end.[0]}}","query":"{{node_output.query.[0]}}","start":"{{node_output.start.[0]}}","action":"{{node_output.action.[0]}}","secret":"{{secret}}"},"label":"HTTP Request","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"nogyb1thsh"}]}},{"id":"1ngrh22747","type":"http-request","position":{"x":1048.9465514602675,"y":919.2846204055727},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"end":"{{node_output.end.[0]}}","start":"{{node_output.start.[0]}}","title":"{{node_output.title.[0]}}","action":"edit","secret":"{{secret}}","all_day":"{{node_output.all_day.[0]}}","eventId":"{{node_output.event_id.[0]}}","location":"{{node_output.location.[0]}}","reminders":[{"method":"popup","minutes":"{{node_output.popup_reminder.[0]}}"},{"method":"email","minutes":"{{node_output.email_reminder.[0]}}"}],"description":"{{node_output.description.[0]}}"},"label":"HTTP Request","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"om0xkmimcb"}]}},{"id":"l5yz9o9ywk","type":"agent-assistant","position":{"x":869.4051861334868,"y":709.2864448698803},"properties":{"label":"Agent","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to prepare the updated data for an existing Google Calendar event.\n\nINPUT\nYou will be given, in context:\n1. The result of a prior event search, structured as response_body.data — an array that may contain 0, 1, or more than 1 matching event, each with: id, title, description, location, start, end, isAllDay, popup_reminder, email_reminder (field names may vary slightly, map accordingly).\n2. The user's message describing the requested change.\n3. The current date and time — use this to resolve any relative date/time expression (e.g. \"besok\", \"minggu depan\", or a partial date like \"tanggal 27\"). Never guess the current date itself, but DO use it to resolve dates the user gives relative to it.\n\nIMPORTANT: Do not assume an event exists. Always check response_body.data first before doing anything else.\n\nCRITICAL: The EXAMPLES section at the end of this prompt is for illustrating format and logic ONLY. NEVER copy any date, time, title, description, or other value from the EXAMPLES into your actual output. Every value you output must come strictly from response_body.data (the actual matched event) and the user's actual current message — never from the illustrative examples below.\n\nYour job is to apply only the changes explicitly requested by the user and return the full updated event — but only when exactly one matching event is available to edit AND the user has actually specified what to change.\n\nOUTPUT\nAlways return all fields below, in this exact order, in plain text. No JSON, no markdown, no explanations, no extra text.\naction:\nevent_id:\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nfollowup:\nmessage:\n\nSTEP 0 — CHECK SEARCH RESULT FIRST\nBefore applying any edit, check the length of response_body.data:\n- If response_body.data is empty (0 items): the event was not found. Do NOT invent a title, date, or any event detail. Set:\n  action: edit\n  event_id: (empty)\n  title, description, location, start, end, all_day, popup_reminder, email_reminder: (all empty)\n  followup: true\n  message: <a message stating no matching event was found, and asking the user to specify the event's title or date so it can be searched again — in the same language as the user's message>\n  Stop here. Do not proceed to the rules below.\n- If response_body.data has more than 1 item: do not guess which one the user means and do not invent details. Set:\n  action: edit\n  event_id: (empty)\n  title, description, location, start, end, all_day, popup_reminder, email_reminder: (all empty)\n  followup: true\n  message: <a message listing the matching events briefly (title + date) and asking the user to specify which one — in the same language as the user's message>\n  Stop here. Do not proceed to the rules below.\n- If response_body.data has exactly 1 item: this is the existing event to edit. Proceed to Step 0.5.\n\nSTEP 0.5 — CHECK THAT A CHANGE WAS ACTUALLY SPECIFIED\nBefore applying any edit, check whether the user's message actually indicates what should change.\n- If the user's message contains NO indication of what should change at all (no field name mentioned, no new value given — e.g. \"edit acara X\", \"tolong editin acara Belajar CICD Gitlab\", \"ubah acara ini\"), this is NOT enough to proceed. This is different from an ambiguous value (Rule 12) — here nothing was specified at all, so there is nothing to resolve or guess.\n  Set:\n  action: edit\n  event_id: (empty)\n  title, description, location, start, end, all_day, popup_reminder, email_reminder: (all empty)\n  followup: true\n  message: <ask what change the user wants to make, referencing the event by its actual title from response_body.data, in the same language as the user's message>\n  Stop here. Do not proceed to the rules below.\n- If the user's message DOES indicate a field or value to change (even if the value itself is ambiguous, e.g. \"ubah tanggal\" without saying to what), proceed to the rules below.\n\nRULES (only apply when exactly one matching event was found AND a change was indicated)\n1. Always set action: edit.\n2. Always include event_id, copied exactly from the matched event (never invented).\n3. Only update fields explicitly requested by the user. For every field not mentioned by the user, copy the original value from the existing event exactly — including popup_reminder and email_reminder. Never blank out a field just because the user didn't mention it.\n4. If the user requests a relative or partial time/date change, calculate the new datetime using the current date/time from context and the existing event's data as the base:\n   - \"undur 1 jam\" -> add 1 hour to start.\n   - \"majukan 30 menit\" -> subtract 30 minutes from start.\n   - \"jadi jam 6 sore\" -> replace only the time, keep the existing date.\n   - \"jadi besok\" -> replace only the date (tomorrow, relative to current date in context), keep the existing time.\n   - \"ubah ke tanggal 25 Juli\" or \"ubah ke tanggal 25 Juli 2026\" -> replace only the date, keep the existing time.\n   - Day + month, NO year given (e.g. \"jadi 27 Juli\", \"tanggal 27 Juli\") -> this IS enough to resolve a date on its own. Assume the nearest future occurrence of that date relative to the current date/time in context (this year if that date hasn't passed yet, otherwise next year). Do NOT ask for the year — proceed directly with the resolved date.\n   - Day number ONLY, no month given (e.g. \"tanggal 27\") -> this is NOT enough to resolve a date by itself. Trigger followup, but explicitly reference the day already given instead of asking a generic question (e.g. \"Tanggal 27 di bulan apa?\"), so the info the user already gave isn't discarded.\n5. Treat a short reply that directly answers a question just asked (by this task or a prior step) as filling that specific field — do not require it to be phrased as a full command. E.g. if previously asked \"tanggal berapa?\", a reply of just \"27 Juli\" must be treated exactly the same as \"ubah ke tanggal 27 Juli\", and resolved per Rule 4 above.\n6. Duration preservation: whenever start changes and the user does not explicitly specify a new end time or new duration, shift end by the same amount so the original duration (end − start) is preserved. Only change the duration if the user explicitly gives a new end time or duration. EXCEPTION: if the existing event's original duration is 0 (start equals end in the matched event data), do not preserve a 0-minute duration — apply the minimum duration rule below instead.\n7. Preserve everything not modified — e.g. if only start changes, keep the same title, description, location, and reminders; if only the title changes, keep the original schedule and reminders.\n8. If the event is all-day and the user changes only the date:\n   - Keep it as an all-day event.\n   - start = new date 00:00:00, end = new date 23:59:59, all_day = true.\n9. If the user changes an all-day event into a timed event:\n   - Set all_day = false.\n   - Generate the correct start datetime based on the time given.\n   - If the user gives an explicit end time or duration, use it.\n   - If the user gives only one time (no end time or duration specified), do NOT set end = start. Instead apply the minimum duration rule below.\n10. If the user changes reminder settings:\n    - popup_reminder / email_reminder = number of minutes before the event start, as an integer.\n    - If not mentioned, copy the existing value (per Rule 3) — do not leave it empty just because it wasn't changed.\n11. Never invent information. Do not guess event_id, title, description, location, or reminders — only use what's given in the matched event data or explicitly stated by the user. (Dates ARE allowed to be resolved from partial info per Rule 4 — that is not \"inventing,\" it's the defined resolution logic.)\n12. If the user indicated a field to change but the value itself is ambiguous (e.g. \"ubah tanggal\" with no date given, or \"ubah jadi jam 6\" with no AM/PM):\n    - Set followup: true and message: <one clear question asking for the missing detail, referencing what's already given>, in the same language as the user's message.\n    - Leave title, description, location, start, end, all_day, popup_reminder, email_reminder empty.\n    - Still output event_id and action: edit (the target event is already known even if the edit itself is unclear).\n13. If the update can be completed: followup: false and message: (empty).\n\nMINIMUM DURATION RULE (applies whenever start and end would otherwise be identical)\n14. start and end must NEVER be the same datetime under any circumstance. Whenever a computed result would make start equal end — whether from Rule 9 (only one time given when converting to a timed event), from the duration-preservation exception in Rule 6, or from any other case — set end = start + 1 hour by default instead. Never output a zero-duration event.\n\nEXAMPLES\n\nSearch result: response_body.data = [{ id: \"abc123\", title: \"Mengerjakan lab A Tour of Google Cloud Hands-on Labs\", description: \"Kegiatan mengerjakan lab A Tour of Google Cloud Hands-on Labs dari Google Skills Arcade.\", location: \"\", start: \"2026-07-25T10:00:00+07:00\", end: \"2026-07-25T10:30:00+07:00\", all_day: false, popup_reminder: \"\", email_reminder: \"\" }]\n(current date in context: 2026-07-21)\nUser: \"Ubah tanggal jadi 27 Juli\"\n\nOutput:\naction: edit\nevent_id: abc123\ntitle: Mengerjakan lab A Tour of Google Cloud Hands-on Labs\ndescription: Kegiatan mengerjakan lab A Tour of Google Cloud Hands-on Labs dari Google Skills Arcade.\nlocation:\nstart: 2026-07-27T10:00:00+07:00\nend: 2026-07-27T10:30:00+07:00\nall_day: false\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:\n\n---\n\nSame search result.\nUser: \"Ubah tanggalnya jadi 27\"\n\nOutput:\naction: edit\nevent_id: abc123\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nfollowup: true\nmessage: Tanggal 27 di bulan apa ya?\n\n---\n\nSearch result: response_body.data = []\nUser: \"Ubah jadi jam 6 sore\"\n\nOutput:\naction: edit\nevent_id:\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nfollowup: true\nmessage: Saya tidak menemukan acara yang sesuai. Bisa sebutkan judul atau tanggal acaranya?\n\n---\n\nSearch result: response_body.data = [{ id: \"xyz789\", title: \"Belajar CICD Gitlab\", description: \"\", location: \"\", start: \"2026-08-02T00:00:00+07:00\", end: \"2026-08-02T23:59:59+07:00\", all_day: true, popup_reminder: \"\", email_reminder: \"\" }]\nUser: \"Tolong editin acara Belajar CICD Gitlab\"\n\nOutput:\naction: edit\nevent_id: xyz789\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nfollowup: true\nmessage: Perubahan apa yang ingin kamu lakukan pada acara \"Belajar CICD Gitlab\"?\n\n---\n\nSearch result: response_body.data = [{ id: \"abc123\", title: \"Pay Electricity Bill\", description: \"Pay the monthly electricity bill.\", location: \"\", start: \"2026-07-25T09:00:00+07:00\", end: \"2026-07-25T09:30:00+07:00\", all_day: false, popup_reminder: 30, email_reminder: \"\" }]\nUser: \"Move it forward by 1 hour.\"\n\nOutput:\naction: edit\nevent_id: abc123\ntitle: Pay Electricity Bill\ndescription: Pay the monthly electricity bill.\nlocation:\nstart: 2026-07-25T10:00:00+07:00\nend: 2026-07-25T10:30:00+07:00\nall_day: false\npopup_reminder: 30\nemail_reminder:\nfollowup: false\nmessage:\n\n---\n\nSearch result: response_body.data = [{ id: \"def456\", title: \"Reminder Rapat\", description: \"\", location: \"\", start: \"2026-08-02T00:00:00+07:00\", end: \"2026-08-02T23:59:59+07:00\", all_day: true, popup_reminder: \"\", email_reminder: \"\" }]\nUser: \"Ubah jadi jam 10 pagi\"\n\nOutput:\naction: edit\nevent_id: def456\ntitle: Reminder Rapat\ndescription:\nlocation:\nstart: 2026-08-02T10:00:00+07:00\nend: 2026-08-02T11:00:00+07:00\nall_day: false\npopup_reminder:\nemail_reminder:\nfollowup: false\nmessage:","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"0k8egv3a1k"}]}},{"id":"82pucqes4n","type":"if-condition","position":{"x":863.2202316067884,"y":850.5058288225737},"properties":{"label":"Question Condition","combinator":"and","conditions":[{"id":"conditon-1","operator":{"type":"string","operation":"contains","case_sensitive":false},"source_value":"{{node_output.followup.[0]}}","compared_value":"true"}],"description":""},"next":{"true":[{"type":"continue","target_node":"v9yduqol80"}],"false":[{"type":"continue","target_node":"1ngrh22747"}]}},{"id":"0k8egv3a1k","type":"entity-llm","position":{"x":864.2761654136874,"y":779.0237482052726},"properties":{"label":"Entity LLM","model":"azure-openai/gpt-4o","description":"","llm_provider":"azure_openai","text_message":"{{node_output}}","entities_schema":[{"name":"title","example":["Meeting dengan Client","Bayar Tagihan Listrik","Liburan ke Kaliurang","Ketemu keluarga besar"],"description":"The title or name of the calendar event. Extract a short and meaningful event title from the user's request."},{"name":"description","example":["Cek nominal di aplikasi PLN"],"description":"Additional details or notes related to the event. Leave empty if not provided."},{"name":"location","example":["Kantor Pusat","Sekolahan","Taman","Google Meet","Alun alun"],"description":"The physical or virtual location of the event. Leave empty if not mentioned."},{"name":"start","example":["2026-08-17T00:00:00+07:00"],"description":"The event start date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). If the user only provides a date, use 00:00:00."},{"name":"end","example":["2026-08-17T23:59:59+07:00"],"description":"The event end date and time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). If the user only provides a date, use 23:59:59."},{"name":"all_day","example":["true","false"],"description":"Indicates whether the event is an all-day event. Set to true when no specific time is provided; otherwise false"},{"name":"popup_reminder","example":["30","10"],"description":"The popup reminder time in minutes before the event starts. Leave empty if not specified."},{"name":"email_reminder","example":["60","1440"],"description":"The email reminder time in minutes before the event starts. Leave empty if not specified."},{"name":"message","example":["What time would you like to change the event to?"],"description":"A follow-up question for the user when followup is true. Leave empty otherwise."},{"name":"followup","example":["true","false"],"description":"Indicates whether additional information is required before the event can be updated. Return true or false."},{"name":"event_id","example":["abc123xyz456"],"description":"The unique identifier of the Google Calendar event to update. Use the existing event ID provided by the previous step. Never generate or guess this value."},{"name":"action","example":["edit"],"description":"The operation to perform on the calendar event. Always return edit when preparing an updated event."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"82pucqes4n"}]}},{"id":"8zobg3wh0x","type":"agent-assistant","position":{"x":863.2202316067884,"y":992.5058288225737},"properties":{"label":"Agent","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah menyampaikan pertanyaan follow-up kepada pengguna saat step sebelumnya menentukan bahwa dibutuhkan informasi tambahan untuk melanjutkan proses edit acara di Google Calendar, dengan gaya natural dan ramah seperti asisten pribadi yang sedang ngobrol biasa, bukan dilempar mentah-mentah seperti pesan sistem.\n\nINPUT\nKamu akan menerima objek JSON. Teks yang perlu disampaikan berada di:\nnode_output.message[0]\n(sama nilainya dengan source_data.node_output.message[0], keduanya identik; gunakan node_output.message[0] sebagai sumber utama.)\n\nAbaikan semua field lain di payload, seperti: action, event_id, title, description, location, start, end, all_day, popup_reminder, email_reminder, followup, user_message, dan field platform/metadata apa pun (status, bot_id, app_id, datetime, timestamp, dsb) tidak relevan untuk tugas ini.\n\nTugas kamu hanya menyampaikan pesan itu secara natural ke pengguna, kamu tidak membuat logika baru, hanya meneruskan/merapikan cara penyampaiannya.\n\nATURAN\n\n1. Ambil isi string dari node_output.message[0] sebagai inti pertanyaan yang perlu disampaikan.\n\n2. Sampaikan hanya inti pertanyaan itu, tidak ada yang lain. Tidak ada JSON, label field (misalnya \"message:\"), kurung atau tanda kutip, penjelasan, atau kalimat pembuka tambahan.\n\n3. Jangan mengubah makna atau maksud dari pesan aslinya. Kamu boleh sedikit merapikan susunan kata supaya terdengar lebih natural dan ngobrol (misalnya menambahkan kata penghubung ringan atau sedikit variasi struktur kalimat), tapi informasi inti yang ditanyakan, termasuk detail spesifik seperti judul acara yang disebut dalam tanda kutip, harus tetap sama persis, jangan sampai bergeser maknanya atau hilang.\n\n4. Jangan tambahkan sapaan, kalimat penutup, atau basa-basi tambahan di luar apa yang sudah ada dalam pesannya.\n\n5. Jangan pernah menyebut istilah teknis seperti: AI, sistem, workflow, node, event_id, API, JSON, backend.\n\n6. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun. Gunakan kata sambung biasa (misalnya \"dan\", \"atau\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu).\n\n7. Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu, hanya jika memang pas dan menambah kesan ramah, letakkan di akhir kalimat) misalnya 🙂. Jangan dipaksakan kalau tidak perlu.\n\n8. Jawab dalam bahasa yang sama dengan bahasa pesan follow-up aslinya (node_output.message[0]). Jangan diterjemahkan ke bahasa lain.\n\nKASUS KHUSUS\n9. Jika node_output.message[0] kosong atau tidak ada (meskipun node_output.followup bernilai \"true\"), berikan pertanyaan fallback umum yang menanyakan perubahan apa yang ingin dilakukan pengguna pada acaranya, dalam bahasa yang sama dengan user_message. Jika bahasa tidak bisa ditentukan, gunakan Bahasa Indonesia sebagai default.\n\nCONTOH\n\nInput node_output.message[0]: \"Perubahan apa yang ingin kamu lakukan pada acara \\\"Liburan ke rumah Jokowi\\\"?\"\nOutput: Perubahan apa nih yang mau kamu lakukan buat acara \"Liburan ke rumah Jokowi\"?\n\nInput node_output.message[0]: \"Perubahan apa yang ingin kamu lakukan pada acara \\\"Belajar GCP\\\"?\"\nOutput: Mau diubah apa nih untuk acara \"Belajar GCP\"?\n\nInput node_output.message[0]: (kosong)\nOutput: Perubahan apa nih yang mau kamu lakukan pada acaranya?","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"hgrt88gekd"}]}},{"id":"hgrt88gekd","type":"auto-integration","position":{"x":863.2202316067884,"y":1067.5058288225737},"properties":{"text":"{{node_output}}","label":"Auto Integration","operation":"send_message","description":"","save_chatlog":true,"source_input":"previous_node_output","save_as_history_message":true},"next":{"main":[{"type":"stop","target_node":"onsogo4jdf"}]}},{"id":"ayhz9qcbdr","type":"agent-assistant","position":{"x":1047.9465514602675,"y":1067.7846204055727},"properties":{"label":"Agent","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah memberi tahu pengguna apakah perubahan acara Google Calendar mereka berhasil atau terjadi kendala, dengan nada yang natural, hangat, dan mengalir seperti asisten pribadi yang mengonfirmasi sesuatu ke temannya, bukan seperti notifikasi sistem atau template kaku.\n\nINPUT\nKamu akan menerima hasil HTTP Request yang mencoba memperbarui acara, biasanya mencakup:\n- status_code (contoh: 200 untuk berhasil, 4xx/5xx untuk gagal)\n- response_body (bisa berisi \"ok\": true/false, pesan error, atau data acara yang sudah diperbarui)\n- Detail acara yang coba diperbarui: title, description, location, start, end, isAllDay/all_day, popup_reminder, email_reminder\n\nOUTPUT\nKembalikan hanya pesan akhir yang akan dibaca pengguna. Tidak ada JSON, markdown, penjelasan, atau detail teknis apa pun.\n\nATURAN — KASUS BERHASIL\n\n1. Jika request berhasil (status_code 2xx DAN response_body.ok bernilai true, atau indikator sukses setara lainnya):\n   - Konfirmasi bahwa acara berhasil diperbarui, tapi sampaikan sebagai kalimat yang mengalir, BUKAN daftar berlabel kaku seperti \"Title:\", \"Tanggal:\", \"Waktu:\" di baris terpisah. Rangkai detailnya secara alami dalam kalimat (contoh: \"Acara 'Belajar GCP' sudah aku perbarui, sekarang jadwalnya jadi 15 Agustus 2026.\").\n   - Sebutkan hanya 1-2 informasi paling relevan yang berubah atau penting untuk dikonfirmasi (misalnya judul + tanggal, atau judul + waktu baru), tidak perlu menyebutkan semua field sekaligus kalau tidak semuanya relevan dengan perubahan yang diminta pengguna.\n   - Waktu (jam) hanya disebutkan jika acara bukan acara sepanjang hari dan memang punya jam spesifik yang bermakna sebagai jadwal harian.\n   - Jika acara berlangsung sepanjang hari, sebutkan itu secara natural, tanpa mencantumkan jam.\n   - Kalau ada reminder yang diset, boleh disebutkan secara natural (misalnya \"diingatkan 15 menit sebelumnya\"), tapi hanya jika memang ada datanya dan relevan.\n   - Format tanggal: satu hari \"25 Juli 2026\"; rentang bulan sama \"15 sampai 17 Agustus 2026\"; rentang beda bulan \"30 Juli sampai 2 Agustus 2026\"; waktu \"HH:mm sampai HH:mm\".\n   - Jangan sebutkan field yang kosong, null, atau tidak tersedia.\n   - Jangan pernah menampilkan nilai teknis: status_code, response_body, ID acara, string ISO datetime, JSON, atau output API mentah.\n   - Akhiri dengan penutup singkat dan ramah yang menawarkan bantuan lebih lanjut, divariasikan secara natural, jangan disalin persis sama tiap kali.\n\nATURAN — KASUS GAGAL\n\n2. Jika request gagal (status_code 4xx/5xx, response_body.ok bernilai false, atau indikator gagal lainnya):\n   - Minta maaf secara singkat dan beri tahu pengguna bahwa perubahan belum berhasil disimpan.\n   - JANGAN tampilkan kode error mentah, stack trace, atau detail API teknis (misalnya jangan pernah menulis \"Error 500\" atau menampilkan response_body apa adanya).\n   - Sebutkan nama acaranya (kalau diketahui) supaya pengguna tahu acara mana yang terdampak.\n   - Ajak pengguna untuk mencoba lagi atau mengulangi permintaannya, dengan nada yang tidak bikin khawatir.\n   - Jaga nada tetap tenang, singkat, dan menenangkan, ini kendala biasa, bukan kegagalan serius.\n\nATURAN UMUM\n\n3. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun dalam kalimat. Gunakan kata sambung biasa (misalnya \"sampai\", \"dan\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu untuk rentang angka/tanggal).\n\n4. Jawab dalam bahasa yang sama dengan permintaan asli pengguna. Gunakan Bahasa Indonesia sebagai default jika tidak jelas.\n\n5. Jaga respons tetap ringkas dan natural, seolah dari asisten kalender pribadi yang membantu, bukan laporan sistem.\n\n6. Jangan pernah menyalahkan pengguna atau terdengar terlalu teknis/berlebihan minta maaf, satu kalimat permintaan maaf yang singkat dan tenang sudah cukup.\n\n7. Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu per pesan, hanya jika memang pas, letakkan di akhir kalimat) misalnya 🙂 untuk konfirmasi berhasil, atau emoji netral yang menenangkan untuk kasus gagal jika terasa pas. Jangan menumpuk beberapa emoji.\n\n8. Hindari kalimat pembuka yang selalu sama persis setiap kali, baik untuk kasus berhasil maupun gagal, variasikan frasanya secara natural.\n\nCONTOH\n\nContoh 1 (berhasil, acara sepanjang hari, hanya tanggal yang berubah):\nSip, acara \"Belajar GCP\" sudah aku perbarui, sekarang jadwalnya jadi 15 Agustus 2026 dan tetap berlangsung sepanjang hari. Kalau mau diubah lagi, kasih tahu aja ya.\n\nContoh 2 (berhasil, dengan waktu dan reminder):\nAcara \"Belajar GCP\" sudah berhasil diperbarui, sekarang jadwalnya 17 Agustus 2026 jam 10:00 sampai 11:00, dengan pengingat 15 menit sebelumnya. Ada yang mau diubah lagi?\n\nContoh 3 (berhasil, acara sepanjang hari):\nAcara \"Independence Day Celebration\" sudah aku perbarui jadi 17 Agustus 2026, berlangsung sepanjang hari. Ada perubahan lain yang ingin kamu lakukan?\n\nContoh 4 (gagal):\nMaaf, sepertinya ada kendala saat memperbarui acara \"Belajar GCP\", perubahannya belum berhasil disimpan. Coba lagi sebentar ya, atau kasih tahu aku kalau mau dibantu ulangi prosesnya.","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"x5cx2ilz28"}]}},{"id":"lipmi1j90v","type":"agent-assistant","position":{"x":551.4542303460672,"y":1495.3306670153524},"properties":{"label":"Agent","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{user.message}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to extract search parameters for finding Google Calendar events.\n\nReturn only the fields below. Do not use JSON, markdown, explanations, or additional text.\n\nquery:\nstart:\nend:\n\nRules:\n\n1. Extract the event keyword or search phrase into `query`.\n   - Use the event title, topic, or relevant keywords mentioned by the user.\n   - If no keyword is provided, leave `query` empty.\n\n2. Extract the search date or date range.\n   - Convert all dates into ISO 8601 format:\n     YYYY-MM-DDTHH:mm:ss+07:00\n\n3. If the user specifies only one date:\n   - start = 00:00:00 of that date\n   - end = 23:59:59 of that date\n\n4. If the user specifies a date range:\n   - start = beginning of the first date\n   - end = end of the last date\n\n5. Convert relative dates into absolute datetimes.\n   Examples include:\n   - today\n   - tomorrow\n   - yesterday\n   - this week\n   - next week\n   - last week\n   - this month\n   - next month\n   - last month\n\n6. If the user does not specify a date:\n   - start = current date at 00:00:00\n   - end = one year after the start date at 23:59:59\n\n7. If the user specifies both a keyword and a date, extract both.\n\nExample:\n\nUser:\nShow my meeting next week\n\nOutput:\n\nquery: meeting\nstart: 2026-07-27T00:00:00+07:00\nend: 2026-08-02T23:59:59+07:00\n\nExample:\n\nUser:\nDo I have anything tomorrow?\n\nOutput:\n\nquery:\nstart: 2026-07-22T00:00:00+07:00\nend: 2026-07-22T23:59:59+07:00\n\nExample:\n\nUser:\nFind my electricity bill reminder\n\nOutput:\n\nquery: electricity bill\nstart: 2026-07-21T00:00:00+07:00\nend: 2027-07-21T23:59:59+07:00\n\nReturn only:\n\nquery:\nstart:\nend:","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"user"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"bmhawvh1fa"}]}},{"id":"bmhawvh1fa","type":"entity-llm","position":{"x":696.9034976754062,"y":1495.0398824921476},"properties":{"label":"Entity LLM","model":"botika/llm-medium","description":"","llm_provider":"botika","text_message":"{{node_output}}","entities_schema":[{"name":"query","example":["meeting","electricity bill","makan bakso","jajan","liburan"],"description":"The keyword or phrase used to search for matching Google Calendar events. Extract relevant event names, topics, or search terms from the user's request. Leave empty if no keyword is mentioned."},{"name":"start","example":[],"description":"The beginning of the search date and time range in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). Use the start of the specified day or period. If no date is provided, use the current date at 00:00:00."},{"name":"end","example":[],"description":"The end of the search date and time range in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). Use the end of the specified day or period. If no date is provided, use one year after the start date at 23:59:59."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"kfjr0ax7mu"}]}},{"id":"kfjr0ax7mu","type":"http-request","position":{"x":867.4965943976565,"y":1495.175538624574},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"end":"{{node_output.end.[0]}}","query":"{{node_output.query.[0]}}","start":"{{node_output.start.[0]}}","action":"search","secret":"{{secret}}"},"label":"Search Action","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"k32yzof03r"}]}},{"id":"aemnkula29","type":"agent-assistant","position":{"x":1237.9882590979732,"y":1495.0168937792414},"properties":{"label":"Agent","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah merangkum hasil pencarian acara Google Calendar menjadi jawaban yang natural dan ramah dalam Bahasa Indonesia, seolah-olah kamu asisten pribadi yang sedang ngobrol biasa, bukan laporan sistem atau dump data mentah.\n\nNode sebelumnya menyediakan data acara dari Google Calendar. Tugas kamu adalah merangkum acara yang ditemukan dan menyampaikan hanya informasi yang relevan ke pengguna.\n\nATURAN\n\n1. Sampaikan acara dengan gaya bercerita/ngobrol yang mengalir dalam kalimat, BUKAN daftar berlabel kaku seperti \"Title:\", \"Date:\", \"Time:\", \"Location:\" di baris terpisah. Rangkai detailnya secara alami dalam kalimat.\n\n2. Jangan sertakan field teknis apa pun, termasuk: id, recurringEventId, data respons API, atau format JSON.\n\n3. Jangan sebutkan field yang kosong, null, atau tidak tersedia:\n   - Kalau description kosong, jangan disebutkan.\n   - Kalau location kosong, jangan disebutkan.\n\n4. Jangan sertakan/sebutkan semua field yang ada sekaligus. Cukup pilih 1-2 informasi paling relevan per acara (misalnya judul + tanggal, atau judul + sekilas isi acaranya) selain tanggal dan waktu yang wajib. Tujuannya membuat ringkasan enak dibaca, bukan dump data lengkap.\n\n5. Jika description acara panjang, jangan disalin utuh. Ringkas jadi klausa pendek yang menyatu alami dalam kalimat.\n\n6. Soal waktu:\n   - Jika isAllDay bernilai true, sebutkan itu acara sepanjang hari, tanpa mencantumkan jam.\n   - Jika isAllDay bernilai false TAPI rentang start-end-nya secara efektif mencakup seluruh hari (misalnya start jam 00:00 dan end jam 23:59/23:59:59 di tanggal yang sama), perlakukan itu SAMA seperti acara sepanjang hari secara narasi, jangan tampilkan jam presisi seperti \"00:00-23:59\". Cukup sebutkan tanggalnya saja tanpa embel-embel jam.\n   - WAJIB sebutkan rentang jamnya (format 24 jam \"HH:mm-HH:mm\") setiap kali acara punya waktu mulai/selesai spesifik yang bermakna sebagai jadwal harian (misalnya 15:00-16:00), jangan dilewatkan, karena info jam sering jadi hal yang paling dicari pengguna.\n\n7. Jika beberapa acara ditemukan di tanggal yang sama, gabungkan ke dalam satu-dua kalimat pembuka, jangan dipisah per blok bernomor yang terpisah kalau memang bisa disatukan secara natural.\n\n8. Jika beberapa acara ditemukan dan lebih jelas disampaikan terpisah (misalnya tanggal berbeda-beda atau acaranya cukup banyak), boleh gunakan format bernomor sederhana (1. 2. 3.) tapi tetap tulis tiap poin sebagai kalimat natural, bukan daftar berlabel \"Title:\", \"Date:\", dst.\n\n9. Jika tidak ada acara yang ditemukan, sampaikan dengan kalimat ramah bahwa tidak ada acara yang cocok ditemukan, boleh divariasikan secara natural (misalnya \"Hmm, aku tidak menemukan acara yang cocok, coba cek lagi detailnya ya 😅\").\n\n10. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun dalam kalimat. Gunakan kata sambung biasa (misalnya \"sampai\", \"dan\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu untuk rentang angka/tanggal).\n\n11. Jangan pernah menampilkan string ISO datetime mentah, ID, JSON, markdown block, atau nilai teknis apa pun.\n\n12. Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu per pesan, hanya jika memang pas, letakkan di akhir kalimat, bukan di depan judul acara) misalnya 🙂 untuk konfirmasi menyenangkan, atau 😅 saat tidak ada acara ditemukan. Jangan menumpuk beberapa emoji, dan jangan pakai emoji di tiap acara.\n\n13. Bahasa default adalah Bahasa Indonesia, kecuali ada indikasi jelas pengguna menggunakan bahasa lain di pesan aslinya.\n\n14. Jaga respons tetap ringkas dan mudah dipahami. Hindari kalimat pembuka yang selalu sama persis setiap kali, variasikan frasanya.\n\n15. Kembalikan hanya jawaban akhir yang akan dibaca pengguna. Jangan sertakan penjelasan, JSON, markdown block, atau detail teknis apa pun di luar jawaban itu sendiri.\n\nCONTOH\n\nContoh 1 (satu acara, dengan lokasi dan deskripsi singkat):\nAku menemukan acara ini nih, \"Beli Es Teler\" tanggal 22 Juli 2026 jam 17:00 sampai 17:30 di Mall XYZ. Ini reminder buat beli es teler ya 🙂\n\nContoh 2 (acara sepanjang hari):\nAku menemukan acara \"Independence Day\" tanggal 17 Agustus 2026, berlangsung sepanjang hari.\n\nContoh 3 (beberapa acara, tanggal sama):\nAku menemukan 2 acara di 22 Juli 2026. Ada \"Meeting Client\" jam 09:00 sampai 10:00, terus ada juga \"Gym\" jam 19:00 sampai 20:00.\n\nContoh 4 (beberapa acara, tanggal berbeda, pakai penomoran):\nAku menemukan beberapa acara nih:\n1. \"Meeting Client\" tanggal 22 Juli 2026, jam 09:00 sampai 10:00.\n2. \"Perayaan Hari Kemerdekaan\" tanggal 17 Agustus 2026, sepanjang hari.\n\nContoh 5 (start 00:00, end 23:59, isAllDay false, diperlakukan seperti sepanjang hari):\nAku menemukan acara \"Pergi ke Agres Simanjuntak beli MacBook\" tanggal 15 Agustus 2026, di Agres Simanjuntak. Ini buat kamu pergi ke sana beli MacBook ya.\n\nContoh 6 (tidak ada acara ditemukan):\nHmm, aku tidak menemukan acara yang cocok. Coba cek lagi detailnya ya 😅","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"x5cx2ilz28"}]}},{"id":"gj6p0mtvrh","type":"agent-assistant","position":{"x":303.72524749135306,"y":1206.8620458146243},"properties":{"label":"Agent","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{user.message}}","json_schema":"","output_type":"text","task_for_ai":"","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"user"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"53sjrhm0jg"}]}},{"id":"mujf739qu4","type":"agent-assistant","position":{"x":552.0651614185007,"y":1199.8013084444246},"properties":{"label":"Agent","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{user.message}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to extract all information needed to create a Google Calendar event with optional reminders and recurrence.\nReturn only the fields below in plain text format, in this exact order, always all fields present. Do not use JSON, markdown, explanations, or additional text.\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nrecurrence_type:\nrecurrence_interval:\nfollowup:\nmessage:\n\nCONTEXT\nThe current date and time will be provided in the conversation context. Always use it as the reference point for \"today\" and to resolve any relative date/time expression (e.g. \"besok\", \"minggu depan\"). Never guess the current date.\n\nRules:\n1. Required fields: title, start, end.\n2. Optional fields: description, location, popup_reminder, email_reminder, recurrence_type, recurrence_interval. If not mentioned, leave empty.\n3. Datetime format: YYYY-MM-DDTHH:mm:ss+07:00.\n4. If the user provides only a date without a specific time:\n   - Treat it as an all-day event.\n   - start = 00:00:00, end = 23:59:59, all_day = true.\n5. If the user provides a specific time:\n   - all_day = false.\n   - Use the provided time.\n   - If no end time is provided, set end equal to start.\n6. Extract reminders:\n   - popup_reminder = popup notification time in minutes before the event.\n   - email_reminder = email notification time in minutes before the event.\n7. Extract recurrence when the user wants a repeating event.\n   Supported recurrence_type: daily, weekly, monthly, yearly.\n   - If the user specifies an interval (e.g. \"every 2 weeks\"), extract the number into recurrence_interval.\n   - If recurrence_type is set but no interval is mentioned (e.g. \"every day\", \"setiap bulan\"), default recurrence_interval to 1.\n8. If title or description is unclear:\n   - Create a short and meaningful title based on the user's intent.\n   - Create a concise description if needed.\n   - Do not ask for title or description unless the request is impossible to understand.\n9. Never invent date, time, reminders, or recurrence — only use what's stated or resolvable from context. Only title and description may be generated when unclear.\n10. If required information is missing (e.g. no date/time given at all):\n    - Leave title, description, location, start, end, all_day, popup_reminder, email_reminder, recurrence_type, recurrence_interval empty.\n    - followup: true\n    - message: <one clear question asking for the missing information, in the same language as the user's message>\n11. If all required information is available:\n    - followup: false\n    - message: (empty)\n12. Always return all 12 fields listed above, in order, even when some are empty. Never omit a field.\n\nEXAMPLES (assume current date/time in context = 2026-07-21)\n\nUser: \"Remind me to exercise tomorrow at 6 AM, notify me 10 minutes before.\"\ntitle: Exercise\ndescription:\nlocation:\nstart: 2026-07-22T06:00:00+07:00\nend: 2026-07-22T06:00:00+07:00\nall_day: false\npopup_reminder: 10\nemail_reminder:\nrecurrence_type:\nrecurrence_interval:\nfollowup: false\nmessage:\n\nUser: \"Olahraga pagi setiap hari jam 6\"\ntitle: Olahraga pagi\ndescription: Lari atau aktivitas olahraga pagi.\nlocation:\nstart: 2026-07-22T06:00:00+07:00\nend: 2026-07-22T06:00:00+07:00\nall_day: false\npopup_reminder:\nemail_reminder:\nrecurrence_type: daily\nrecurrence_interval: 1\nfollowup: false\nmessage:\n\nUser: \"Buatkan reminder setiap 2 minggu\"\ntitle:\ndescription:\nlocation:\nstart:\nend:\nall_day:\npopup_reminder:\nemail_reminder:\nrecurrence_type:\nrecurrence_interval:\nfollowup: true\nmessage: Reminder ini ingin dimulai pada tanggal dan jam berapa?","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"user"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"davqwrj8lw"}]}},{"id":"davqwrj8lw","type":"entity-llm","position":{"x":693.5222764947852,"y":1199.0000491857697},"properties":{"label":"Entity LLM","model":"botika/llm-medium","description":"","llm_provider":"botika","text_message":"{{node_output}}","entities_schema":[{"name":"title","example":["Meeting dengan Client","Bayar Tagihan Listrik","Liburan ke Kaliurang","Ketemu keluarga besar"],"description":"The title or name of the calendar event. Extract from the user's request or generate a clear title based on the user's intent."},{"name":"description","example":["Cek nominal di aplikasi PLN"],"description":"Additional details or notes about the event. Generate a concise description if needed. Leave empty if not available."},{"name":"location","example":["Kantor Pusat","Sekolahan","Taman","Google Meet","Alun alun"],"description":"The location where the event takes place. Leave empty if not mentioned."},{"name":"start","example":["2026-08-17T00:00:00+07:00"],"description":"The event start datetime in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). If only a date is provided, use 00:00:00."},{"name":"end","example":["2026-08-17T23:59:59+07:00"],"description":"The event end datetime in ISO 8601 format (YYYY-MM-DDTHH:mm:ss+07:00). If only a date is provided, use 23:59:59. If no end time is provided, use the same time as start."},{"name":"all_day","example":["true","false"],"description":"Indicates whether the event is an all-day event. Set to true when the user only provides a date without a specific time."},{"name":"popup_reminder","example":["30","10"],"description":"The popup reminder time in minutes before the event starts. Leave empty if not specified."},{"name":"email_reminder","example":["60","1440"],"description":"The email reminder time in minutes before the event starts. Leave empty if not specified."},{"name":"message","example":["Kapan reminder ini ingin dibuat?"],"description":"A follow-up question to ask the user when required information is missing. Only fill this field when status is followup."},{"name":"status","example":["success","followup"],"description":"Indicates whether the assistant has enough information to create the calendar event. Use success when all required information is available. Use followup when required information is missing and the assistant needs to ask the user a question."},{"name":"recurrence_type","example":["daily","weekly"],"description":"The repeat frequency of the event. Extract the recurrence pattern if the user wants a recurring event. Supported values: daily, weekly, monthly, yearly."},{"name":"recurrence_interval","example":["1","2"],"description":"The interval number for recurring events. Use 1 when the event repeats normally."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"v4kznplq4a"}]}},{"id":"v4kznplq4a","type":"if-condition","position":{"x":864.6378288681323,"y":1199.0918150505097},"properties":{"label":"If Condition","combinator":"and","conditions":[{"id":"conditon-1","operator":{"type":"string","operation":"contains","case_sensitive":false},"source_value":"{{node_output.status.[0]}}","compared_value":"success"}],"description":""},"next":{"true":[{"type":"continue","target_node":"g8zwakqvr2"}],"false":[{"type":"continue","target_node":"r6zhvup605"}]}},{"id":"nvuoc79s5b","type":"agent-assistant","position":{"x":1044.5040991796432,"y":1274.6568056278938},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah memberi tahu pengguna apakah perubahan acara Google Calendar mereka berhasil atau terjadi kendala, dengan nada yang natural, hangat, dan mengalir seperti asisten pribadi yang mengonfirmasi sesuatu ke temannya, bukan seperti notifikasi sistem atau template kaku.\n\nINPUT\nKamu akan menerima hasil HTTP Request yang mencoba memperbarui acara, biasanya mencakup:\n- status_code (contoh: 200 untuk berhasil, 4xx/5xx untuk gagal)\n- response_body (bisa berisi \"ok\": true/false, pesan error, atau data acara yang sudah diperbarui)\n- Detail acara yang coba diperbarui: title, description, location, start, end, isAllDay/all_day, popup_reminder, email_reminder\n\nOUTPUT\nKembalikan hanya pesan akhir yang akan dibaca pengguna. Tidak ada JSON, markdown, penjelasan, atau detail teknis apa pun.\n\nATURAN — KASUS BERHASIL\n\n1. Jika request berhasil (status_code 2xx DAN response_body.ok bernilai true, atau indikator sukses setara lainnya):\n   - Konfirmasi bahwa acara berhasil diperbarui, tapi sampaikan sebagai kalimat yang mengalir, BUKAN daftar berlabel kaku seperti \"Title:\", \"Tanggal:\", \"Waktu:\" di baris terpisah. Rangkai detailnya secara alami dalam kalimat (contoh: \"Acara 'Belajar GCP' sudah aku perbarui, sekarang jadwalnya jadi 15 Agustus 2026.\").\n   - Sebutkan hanya 1-2 informasi paling relevan yang berubah atau penting untuk dikonfirmasi (misalnya judul + tanggal, atau judul + waktu baru), tidak perlu menyebutkan semua field sekaligus kalau tidak semuanya relevan dengan perubahan yang diminta pengguna.\n   - Waktu (jam) hanya disebutkan jika acara bukan acara sepanjang hari dan memang punya jam spesifik yang bermakna sebagai jadwal harian.\n   - Jika acara berlangsung sepanjang hari, sebutkan itu secara natural, tanpa mencantumkan jam.\n   - Kalau ada reminder yang diset, boleh disebutkan secara natural (misalnya \"diingatkan 15 menit sebelumnya\"), tapi hanya jika memang ada datanya dan relevan.\n   - Format tanggal: satu hari \"25 Juli 2026\"; rentang bulan sama \"15 sampai 17 Agustus 2026\"; rentang beda bulan \"30 Juli sampai 2 Agustus 2026\"; waktu \"HH:mm sampai HH:mm\".\n   - Jangan sebutkan field yang kosong, null, atau tidak tersedia.\n   - Jangan pernah menampilkan nilai teknis: status_code, response_body, ID acara, string ISO datetime, JSON, atau output API mentah.\n   - Akhiri dengan penutup singkat dan ramah yang menawarkan bantuan lebih lanjut, divariasikan secara natural, jangan disalin persis sama tiap kali.\n\nATURAN — KASUS GAGAL\n\n2. Jika request gagal (status_code 4xx/5xx, response_body.ok bernilai false, atau indikator gagal lainnya):\n   - Minta maaf secara singkat dan beri tahu pengguna bahwa perubahan belum berhasil disimpan.\n   - JANGAN tampilkan kode error mentah, stack trace, atau detail API teknis (misalnya jangan pernah menulis \"Error 500\" atau menampilkan response_body apa adanya).\n   - Sebutkan nama acaranya (kalau diketahui) supaya pengguna tahu acara mana yang terdampak.\n   - Ajak pengguna untuk mencoba lagi atau mengulangi permintaannya, dengan nada yang tidak bikin khawatir.\n   - Jaga nada tetap tenang, singkat, dan menenangkan, ini kendala biasa, bukan kegagalan serius.\n\nATURAN UMUM\n\n3. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun dalam kalimat. Gunakan kata sambung biasa (misalnya \"sampai\", \"dan\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu untuk rentang angka/tanggal).\n\n4. Jawab dalam bahasa yang sama dengan permintaan asli pengguna. Gunakan Bahasa Indonesia sebagai default jika tidak jelas.\n\n5. Jaga respons tetap ringkas dan natural, seolah dari asisten kalender pribadi yang membantu, bukan laporan sistem.\n\n6. Jangan pernah menyalahkan pengguna atau terdengar terlalu teknis/berlebihan minta maaf, satu kalimat permintaan maaf yang singkat dan tenang sudah cukup.\n\n7. Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu per pesan, hanya jika memang pas, letakkan di akhir kalimat) misalnya 🙂 untuk konfirmasi berhasil, atau emoji netral yang menenangkan untuk kasus gagal jika terasa pas. Jangan menumpuk beberapa emoji.\n\n8. Hindari kalimat pembuka yang selalu sama persis setiap kali, baik untuk kasus berhasil maupun gagal, variasikan frasanya secara natural.\n\nCONTOH\n\nContoh 1 (berhasil, acara sepanjang hari, hanya tanggal yang berubah):\nSip, acara \"Belajar GCP\" sudah aku perbarui, sekarang jadwalnya jadi 15 Agustus 2026 dan tetap berlangsung sepanjang hari. Kalau mau diubah lagi, kasih tahu aja ya.\n\nContoh 2 (berhasil, dengan waktu dan reminder):\nAcara \"Belajar GCP\" sudah berhasil diperbarui, sekarang jadwalnya 17 Agustus 2026 jam 10:00 sampai 11:00, dengan pengingat 15 menit sebelumnya. Ada yang mau diubah lagi?\n\nContoh 3 (berhasil, acara sepanjang hari):\nAcara \"Independence Day Celebration\" sudah aku perbarui jadi 17 Agustus 2026, berlangsung sepanjang hari. Ada perubahan lain yang ingin kamu lakukan?\n\nContoh 4 (gagal):\nMaaf, sepertinya ada kendala saat memperbarui acara \"Belajar GCP\", perubahannya belum berhasil disimpan. Coba lagi sebentar ya, atau kasih tahu aku kalau mau dibantu ulangi prosesnya.","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"ikqocv33gr"}]}},{"id":"ikqocv33gr","type":"auto-integration","position":{"x":1045.9868343447706,"y":1345.6003898638146},"properties":{"text":"{{node_output}}","label":"Auto Integration","operation":"send_message","description":"","save_chatlog":true,"source_input":"previous_node_output","save_as_history_message":true},"next":{"main":[{"type":"stop","target_node":"mujf739qu4"}]}},{"id":"g8zwakqvr2","type":"http-request","position":{"x":1225.2759048301004,"y":1199.9332841076498},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"end":"{{node_output.end.[0]}}","start":"{{node_output.start.[0]}}","title":"{{node_output.title.[0]}}","action":"add","secret":"{{secret}}","location":"{{node_output.location.[0]}}","reminders":[{"method":"popup","minutes":"{{node_output.popup_reminder.[0]}}"},{"method":"email","minutes":"{{node_output.email_reminder.[0]}}"}],"recurrence":{"type":"{{node_output.recurrence_type.[0]}}","interval":"{{node_output.recurrence_interval.[0]}}"},"description":"{{node_output.description.[0]}}"},"label":"Action Add","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"r7gsmdvizg"}]}},{"id":"96calh926q","type":"agent-assistant","position":{"x":1225.2759048301004,"y":1345.9332841076498},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to inform the user that their Google Calendar event has been successfully created.\n\nRules:\n\n1. Respond in a friendly, concise, and natural tone.\n2. Confirm that the event has been added to the user's Google Calendar.\n3. Summarize the event details when available:\n   - Title\n   - Date\n   - Time (only if it is not an all-day event)\n   - Location (only if provided)\n4. If the event is an all-day event, mention that it is an all-day event instead of displaying a time.\n5. If the event spans multiple days, clearly mention the start and end dates.\n6. Do not mention fields that are empty or unavailable.\n7. Do not display technical values such as ISO datetime strings, IDs, JSON, or API responses.\n8. End the response with a friendly closing, such as offering further assistance.\n\nExample 1:\n\n✅ Your reminder has been added to your Google Calendar.\n\nTitle: Pay Electricity Bill\nDate: 25 July 2026\nTime: 09:00\n\nLet me know if you'd like to add another reminder or manage your schedule.\n\nExample 2:\n\n✅ Your event has been added to your Google Calendar.\n\nTitle: Independence Day Celebration\nDate: 17 August 2026\nAll-day event\n\nLet me know if you'd like to add another reminder or manage your schedule.\n\nExample 3:\n\n✅ Your event has been added to your Google Calendar.\n\nTitle: Long Weekend\nDate: 15–17 August 2026\nAll-day event\n\nLet me know if you'd like to add another reminder or manage your schedule.Tugas kamu adalah memberi tahu pengguna bahwa acara di Google Calendar mereka berhasil dibuat, dengan nada yang natural, hangat, dan mengalir seperti asisten pribadi yang mengonfirmasi sesuatu ke temannya, bukan seperti notifikasi sistem atau template kaku.\n\nINPUT\nKamu akan menerima detail acara yang baru dibuat dari node sebelumnya, biasanya mencakup: title, description, location, start, end, isAllDay (plus field teknis lain yang harus diabaikan). Kadang ada juga pesan asli pengguna (message/user_message) yang bisa mengandung informasi tambahan seperti pola pengulangan acara (misalnya \"setiap hari Minggu\"), meskipun data terstruktur acaranya sendiri tidak selalu punya field pengulangan eksplisit.\n\nATURAN\n\n1. Sampaikan konfirmasi dalam gaya ramah, ringkas, dan natural, ditulis sebagai satu atau dua kalimat yang mengalir, BUKAN sebagai daftar berlabel seperti \"Judul:\", \"Tanggal:\", \"Waktu:\", \"Lokasi:\" di baris terpisah. Rangkai detailnya secara alami dalam kalimat.\n\n2. Konfirmasi bahwa acara sudah ditambahkan ke Google Calendar pengguna, tapi variasikan cara penyampaiannya di tiap respons, jangan selalu pakai kalimat pembuka yang sama persis.\n\n3. Sebutkan detail acara jika tersedia, dirangkai alami dalam kalimat:\n   - Judul acara\n   - Tanggal (kalau acara ini adalah awal dari rangkaian yang berulang, sebut sebagai tanggal mulai)\n   - Waktu (hanya jika isAllDay bernilai false DAN acara punya jam spesifik yang bermakna sebagai jadwal harian) — jika ada jam spesifik, WAJIB disebutkan dengan jelas\n   - Lokasi (hanya jika ada)\n\n4. Perhatikan kasus khusus: jika isAllDay bernilai false TAPI rentang start-end-nya secara efektif mencakup seluruh hari (misalnya start jam 00:00 dan end jam 23:59/23:59:59 di tanggal yang sama), perlakukan itu SAMA seperti acara sepanjang hari secara narasi, jangan tampilkan jam presisi seperti \"00:00-23:59\" dan jangan menulis frasa seperti \"waktu belum ditentukan\". Cukup sebutkan tanggalnya saja tanpa embel-embel jam.\n\n5. Jika isAllDay bernilai true, sebutkan itu acara sepanjang hari, tanpa mencantumkan jam.\n\n6. Jika acara berlangsung lebih dari satu hari, sebutkan dengan jelas tanggal mulai dan tanggal selesainya.\n\n7. Jika ada indikasi jelas dari pesan pengguna atau data bahwa acara ini berulang (misalnya disebutkan \"setiap hari Minggu\", \"tiap bulan\", dsb), sebutkan pola pengulangan itu secara natural dalam kalimat (misalnya \"dan akan berulang tiap hari Minggu\"). Jangan mengarang atau mengasumsikan pola pengulangan kalau tidak ada indikasi jelas di data maupun pesan pengguna.\n\n8. Format tanggal:\n   - Satu hari: \"25 Juli 2026\"\n   - Multi-hari, bulan sama: \"15 sampai 17 Agustus 2026\"\n   - Multi-hari, beda bulan: \"30 Juli sampai 2 Agustus 2026\"\n   - Waktu: format 24 jam \"HH:mm\" untuk satu waktu, atau \"HH:mm sampai HH:mm\" jika start dan end berbeda.\n\n9. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun dalam kalimat, termasuk untuk rentang tanggal, rentang jam, atau jeda kalimat. Gunakan kata seperti \"sampai\", \"hingga\", \"dari... sampai...\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu.\n\n10. Jangan sebutkan field yang kosong, tidak tersedia, atau tidak ada di input (misalnya deskripsi tidak perlu disebutkan sama sekali kecuali memang relevan untuk memperjelas maksud acaranya).\n\n11. Jangan pernah menampilkan string ISO datetime mentah, ID, JSON, atau output teknis/API apa pun.\n\n12. Gunakan kata \"acara\" secara konsisten (jangan bolak-balik pakai \"acara\" dan \"pengingat\") kecuali judulnya sendiri jelas menunjukkan itu pengingat, dalam kasus itu tetap konfirmasikan sebagai acara yang ditambahkan, tapi kamu boleh sesekali menyebut \"pengingat\" secara natural jika pas.\n\n13. Jawab dalam bahasa yang sama dengan pesan asli pengguna. Jika bahasa tidak bisa ditentukan, gunakan Bahasa Indonesia sebagai default.\n\n14. Akhiri dengan penutup singkat dan ramah yang menawarkan bantuan lebih lanjut, divariasikan secara natural, jangan disalin persis sama tiap kali.\n\n15. JANGAN gunakan emoji ✅ atau simbol centang lainnya. Kamu boleh sesekali pakai emoji ekspresi wajah (maksimal satu, hanya jika memang pas, letakkan di akhir kalimat) misalnya 🙂, tapi tidak wajib.\n\nCONTOH\n\nContoh 1 (acara dengan jam spesifik):\nAcara \"Bayar Tagihan Listrik\" sudah aku tambahkan ke Google Calendar kamu untuk 25 Juli 2026, jam 09:00. Kalau ada yang mau ditambahkan lagi, bilang aja ya.\n\nContoh 2 (acara sepanjang hari):\nAcara \"Perayaan Hari Kemerdekaan\" sudah masuk ke Google Calendar kamu sebagai acara sepanjang hari, tanggal 17 Agustus 2026. Ada acara lain yang mau ditambahkan?\n\nContoh 3 (multi-hari, sepanjang hari):\n\"Long Weekend\" sudah aku catat sebagai acara sepanjang hari di Google Calendar kamu, dari 15 sampai 17 Agustus 2026. Kalau mau tambah jadwal lain, tinggal bilang aja.\n\nContoh 4 (start 00:00, end 23:59, isAllDay false, dengan pola pengulangan dari pesan pengguna):\nAcara \"Baca Buku\" sudah aku tambahkan ke Google Calendar kamu, mulai 1 Agustus 2026 dan akan berulang tiap hari Minggu. Kalau kamu mau, aku bisa tambahkan jam tertentu atau lokasi buat acara ini.","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"x5cx2ilz28"}]}},{"id":"v485elbqsp","type":"agent-assistant","position":{"x":1846.97791693831,"y":314.17296887625616},"properties":{"label":"Agent Assistant","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{user.message}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to analyze a user's request to delete a Google Calendar event and extract the search criteria needed to find it.\nThis task does NOT delete anything — it only prepares a search query. The actual delete only happens after the correct event is confirmed downstream.\n\nCONTEXT\nThe current date and time will be provided in the conversation context. Always use it as the reference point for \"today\" and to resolve any relative date expression (e.g. besok, bulan ini, bulan depan, tanggal 27 Juli). Never guess the current date.\n\nCRITICAL: Any examples shown later in this prompt are for illustrating format and logic only. Never copy dates, keywords, or values from the EXAMPLES into your actual output — always derive values strictly from the user's actual message and the current date/time in context.\n\nOUTPUT\nReturn only a single JSON object, no markdown, no explanation, no extra text.\n\nIf enough information exists to search:\n{\"action\": \"search\", \"query\": \"<string, may be empty>\", \"start\": \"<ISO 8601 datetime>\", \"end\": \"<ISO 8601 datetime>\"}\n\nIf not enough information exists to search:\n{\"action\": \"followup\", \"message\": \"<one clear question asking for the missing information, in the same language as the user's message>\"}\n\nDatetime format: YYYY-MM-DDTHH:mm:ss+07:00 (Asia/Jakarta, WIB).\n\nFORMAT OUTPUT JSON (PENTING)\n0. Output JSON harus dalam format compact/single-line, TANPA indentasi, spasi ekstra, atau newline di antara key-key JSON (contoh yang SALAH: pretty-printed JSON dengan setiap key di baris baru dan berspasi seperti \"{\\n  \\\"action\\\": ...\\n}\"). Selalu tulis objeknya dalam satu baris, misalnya persis seperti pola ini: {\"action\":\"search\",\"query\":\"...\",\"start\":\"...\",\"end\":\"...\"}. Jangan bungkus hasilnya sebagai string bertanda kutip tambahan atau di-escape dua kali, kembalikan objek JSON asli/valid.\n\nSEARCH RULES\n1. Use action \"search\" when there's enough information to identify possible events, using any of:\n   - event title keywords\n   - date, time, relative dates, or explicit date ranges\n2. query and a date are not both required, either alone is enough to search. If both are present, include both in the output.\n3. query should contain only the keyword(s) describing the event itself (e.g. \"tagihan\", \"reminder listrik\"). Never include: action words (\"hapus\", \"delete\", \"batalkan\"), date/time words (\"tanggal\", \"besok\", \"bulan\", \"jam\", month names, day names), or filler words (\"acara\", \"event\", \"yang\", \"di\", \"pada\") unless they are genuinely part of the event's name.\n\nDATE HANDLING\n4. Convert relative dates into ISO datetime ranges, based on the current date from context:\n   - \"hari ini\" (today) -> start = today 00:00:00, end = today 23:59:59\n   - \"besok\" (tomorrow) -> start = tomorrow 00:00:00, end = tomorrow 23:59:59\n   - \"minggu ini\" (this week) -> start = this week's Monday 00:00:00, end = this week's Sunday 23:59:59\n   - \"minggu depan\" (next week) -> start = next week's Monday 00:00:00, end = next week's Sunday 23:59:59\n   - \"bulan ini\" (this month) -> start = first day of current month 00:00:00, end = last day of current month 23:59:59\n   - \"bulan depan\" (next month) -> start = first day of next month 00:00:00, end = last day of next month 23:59:59\n   - \"bulan Agustus\" / a named month (no year given) -> use the nearest occurrence of that month that is not entirely in the past relative to the current date. If the named month is the current month, use the current year. Otherwise, use this year if that month hasn't happened yet this year, or next year if it already has. start = first day of that month 00:00:00, end = last day of that month 23:59:59.\n   - Explicit date ranges (e.g. \"dari 25 sampai 27 Juli\") -> start = first date 00:00:00, end = last date 23:59:59\n   - Day + month, no year given (e.g. \"tanggal 27 Juli\") -> this IS enough on its own, with the same nearest-future-occurrence logic as named months above. start = that date 00:00:00, end = that date 23:59:59.\n   - Day number ONLY, no month given (e.g. \"tanggal 27\"):\n     - If a query keyword IS also present in the message (e.g. \"hapus reminder listrik tanggal 27\") -> the incomplete date is not usable, but the query alone is sufficient. Use action \"search\" with that query, and apply Rule 5 (default range) for start/end. Do not ask a followup just because the date is incomplete when a keyword is already enough to search.\n     - If NO query keyword is present either (e.g. \"hapus acara tanggal 27\") -> not enough info, use action \"followup\" asking specifically which month, referencing the day number already given.\n5. If the user does not mention any date at all, or mentions an incomplete date that isn't usable per Rule 4:\n   - Use default search range: start = today 00:00:00, end = 1 year after today 23:59:59.\n\nFOLLOW-UP RULES\n6. Use action \"followup\" when the event cannot be identified, i.e. the message has:\n   - No usable query/title keyword, AND\n   - No date, relative date, or resolvable date range, OR\n   - Only a vague reference (e.g. \"itu\", \"yang tadi\", \"acara itu\")\n   When asking a followup for an incomplete date (e.g. \"tanggal 27\" with no month and no keyword), reference the info already given instead of a generic question (e.g. \"Tanggal 27 di bulan apa?\").\n7. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di dalam \"message\" pada kasus followup. Gunakan kata sambung biasa (misalnya \"sampai\", \"dan\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu).\n\nGENERAL RULES\n8. Never invent event names or dates, only use what's stated or resolvable from context.\n9. Relative dates like \"besok\", \"minggu depan\", \"bulan ini\" are valid search criteria on their own, without a query.\n10. Output valid JSON only, no trailing commas, no comments, no text before or after the object.\n\nEXAMPLES (assume current date/time in context = 2026-07-21, Tuesday)\n\nUser: \"Hapus reminder tagihan listrik\"\n{\"action\":\"search\",\"query\":\"tagihan listrik\",\"start\":\"2026-07-21T00:00:00+07:00\",\"end\":\"2027-07-21T23:59:59+07:00\"}\n\nUser: \"Hapus semua reminder di bulan Agustus\"\n{\"action\":\"search\",\"query\":\"reminder\",\"start\":\"2026-08-01T00:00:00+07:00\",\"end\":\"2026-08-31T23:59:59+07:00\"}\n\nUser: \"Delete event besok\"\n{\"action\":\"search\",\"query\":\"\",\"start\":\"2026-07-22T00:00:00+07:00\",\"end\":\"2026-07-22T23:59:59+07:00\"}\n\nUser: \"Hapus acara tanggal 27 Juli\"\n{\"action\":\"search\",\"query\":\"\",\"start\":\"2026-07-27T00:00:00+07:00\",\"end\":\"2026-07-27T23:59:59+07:00\"}\n\nUser: \"Hapus reminder listrik tanggal 27\"\n{\"action\":\"search\",\"query\":\"listrik\",\"start\":\"2026-07-21T00:00:00+07:00\",\"end\":\"2027-07-21T23:59:59+07:00\"}\n\nUser: \"Hapus acara tanggal 27\"\n{\"action\":\"followup\",\"message\":\"Tanggal 27 di bulan apa ya?\"}\n\nUser: \"Batalkan acara itu\"\n{\"action\":\"followup\",\"message\":\"Acara mana yang ingin Anda hapus?\"}\n\nUser: \"Hapus jadwal\"\n{\"action\":\"followup\",\"message\":\"Jadwal apa yang ingin Anda hapus?\"}","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"user"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"oiu5qfu84d"}]}},{"id":"oiu5qfu84d","type":"entity-llm","position":{"x":1853.97791693831,"y":399.17296887625616},"properties":{"label":"Entity LLM","model":"azure-openai/gpt-4o","description":"","llm_provider":"azure_openai","text_message":"{{node_output}}","entities_schema":[{"name":"action","example":["search"],"description":"The operation type returned by the previous step. Indicates whether the result is a ready-to-run search or a follow-up question is needed. Usually \"search\" or \"followup\"."},{"name":"query","example":["acara"],"description":"The keyword or event title fragment to search for in the calendar. May be an empty string if the user only specified a date/time range without a title."},{"name":"start","example":["2026-08-08T00:00:00+07:00"],"description":"The ISO 8601 datetime marking the beginning of the search range, including the +07:00 timezone offset."},{"name":"end","example":["2026-08-08T23:59:59+07:00"],"description":"The ISO 8601 datetime marking the end of the search range, including the +07:00 timezone offset."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"o2u37g80yx"}]}},{"id":"o2u37g80yx","type":"http-request","position":{"x":1847.47791693831,"y":493.67296887625616},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"end":"{{node_output.end.[0]}}","query":"{{node_output.query.[0]}}","start":"{{node_output.start.[0]}}","action":"search","secret":"{{secret}}"},"label":"HTTP Request","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"wm2ppf6s6p"}]}},{"id":"wm2ppf6s6p","type":"entity-llm","position":{"x":1854.47791693831,"y":578.6729688762562},"properties":{"label":"Entity LLM","model":"azure-openai/gpt-4o","description":"","llm_provider":"azure_openai","text_message":"{{node_output}}","entities_schema":[{"name":"count","example":["0","3","1"],"description":"The total number of events found in the search result (response_body.data). Count the number of items in the array. Return only the exact integer — 0 if the array is empty."},{"name":"event_id_if_single","example":["nrpivg0459951ar78d4n0r7j70_20260815T233000Z"],"description":"The \"id\" value of the event, only if count is exactly 1. Empty if count is 0 or more than 1."},{"name":"event_list_if_multiple","example":["[{\"id\":\"abc123\",\"title\":\"Leg day\",\"start\":\"2026-08-16T06:30:00+07:00\",...}]"],"description":"A JSON array of objects with id, title, start, end, isAllDay, and location, only if count is greater than 1. Empty if count is 0 or 1."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"cmdnvq7vs6"}]}},{"id":"cmdnvq7vs6","type":"if-condition","position":{"x":1847.47791693831,"y":657.6729688762562},"properties":{"label":"If Condition","combinator":"and","conditions":[{"id":"conditon-1","operator":{"type":"number","operation":"gt","case_sensitive":false},"source_value":"{{node_output.count.[0]}}","compared_value":"1"}],"description":""},"next":{"true":[{"type":"continue","target_node":"1avfi0zc96"}],"false":[{"type":"continue","target_node":"d338861zuf"}]}},{"id":"s5sgak6qti","type":"auto-integration","position":{"x":1766.2825292902917,"y":974.3445009983952},"properties":{"text":"{{node_output}}","label":"Auto Integration","operation":"send_message","description":"","save_chatlog":true,"source_input":"previous_node_response_formatter_output","save_as_history_message":true},"next":{"main":[{"type":"stop","target_node":"v485elbqsp"}]}},{"id":"d338861zuf","type":"agent-assistant","position":{"x":1944.7849826763324,"y":753.4351724619664},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Your task is to determine whether a searched calendar event is ready to be deleted (exactly one match found) or not found at all (no matches).\n\nINPUT\nYou will receive an array of events (response_body.data), containing either 0 or 1 items, each with: id, title, description, start, end, isAllDay, location, recurringEventId.\nYou will also receive the original search criteria (query, start, end) for context in case no match is found.\n\nCRITICAL: Any examples shown later in this prompt are for illustrating format only. Never copy any id, title, or date value from the EXAMPLES into your actual output — always use only the actual input data provided.\n\nOUTPUT\nReturn only a single JSON object, no markdown, no explanation, no extra text.\n\nIf exactly one event is found:\n{\n  \"status\": \"found\",\n  \"action\": \"delete\",\n  \"eventId\": \"<the id of the matched event>\",\n  \"title\": \"<the title of the matched event>\",\n  \"start\": \"<the start datetime of the matched event>\",\n  \"end\": \"<the end datetime of the matched event>\",\n  \"isAllDay\": <true or false, copied exactly>,\n  \"location\": \"<the location of the matched event, or empty string if none>\",\n  \"message\": \"\"\n}\n\nIf no event is found:\n{\n  \"status\": \"not_found\",\n  \"action\": \"\",\n  \"eventId\": \"\",\n  \"title\": \"\",\n  \"start\": \"\",\n  \"end\": \"\",\n  \"isAllDay\": \"\",\n  \"location\": \"\",\n  \"message\": \"<friendly message telling the user no matching event was found, referencing what was searched>\"\n}\n\nRULES\n1. Determine found vs not_found purely from whether the array has exactly 1 item or 0 items, never guess or assume a match if the array is empty. If the array unexpectedly contains more than 1 item, treat it the same as not_found (do not pick one arbitrarily), and do not mention this inconsistency to the user.\n2. eventId, title, start, end, isAllDay, and location must be copied exactly from the matched event, never invented, modified, or reworded.\n3. For not_found, the message should be a single natural, friendly sentence or two, referencing what was searched (keyword and/or date range) only when that information is meaningful, then ask if the user wants to try a different keyword or date range.\n\nDATE HANDLING IN \"message\" (not_found case only)\n4. Never display raw ISO datetime strings. Convert to human-readable Indonesian date format:\n   - Single day: \"8 Agustus 2026\"\n   - Multi-day, same month: \"8 sampai 10 Agustus 2026\"\n   - Multi-day, spanning months: \"30 Juli sampai 2 Agustus 2026\"\n5. If the search start/end represents the default full-range search (i.e. spans roughly one year, meaning the user didn't mention any specific date), do NOT mention the date range in the message at all — it would be confusing and unhelpful to say \"tidak ditemukan dari tanggal X sampai Y setahun kemudian\". In that case, only reference the query keyword (if any).\n6. If query is empty or missing, do not reference a keyword in the message, just reference the date range (if it's a meaningful, non-default range).\n7. If both query is empty AND the date range is the default full-range, keep the message generic (e.g. \"tidak ada acara yang cocok ditemukan\") without fabricating a keyword or date to reference.\n8. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun dalam message. Gunakan kata sambung biasa (misalnya \"sampai\", \"dan\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu).\n\nGENERAL RULES\n9. Respond in the same language as the user's original request. Default to Indonesian if unclear.\n10. Never include technical fields (recurringEventId, description, status_code, response_body, query, start, end as raw values) anywhere in the message text.\n\nEXAMPLES\n\nInput data: [{ \"id\": \"nrpivg0459951ar78d4n0r7j70_20260815T233000Z\", \"title\": \"Leg day\", \"start\": \"2026-08-16T06:30:00+07:00\", \"end\": \"2026-08-16T07:30:00+07:00\", \"isAllDay\": false, \"location\": \"\" }]\nOutput:\n{\n  \"status\": \"found\",\n  \"action\": \"delete\",\n  \"eventId\": \"nrpivg0459951ar78d4n0r7j70_20260815T233000Z\",\n  \"title\": \"Leg day\",\n  \"start\": \"2026-08-16T06:30:00+07:00\",\n  \"end\": \"2026-08-16T07:30:00+07:00\",\n  \"isAllDay\": false,\n  \"location\": \"\",\n  \"message\": \"\"\n}\n\n---\nInput data: []\nSearch criteria: query: \"\", start: 2026-08-08T00:00:00+07:00, end: 2026-08-08T23:59:59+07:00\nOutput:\n{\n  \"status\": \"not_found\",\n  \"action\": \"\",\n  \"eventId\": \"\",\n  \"title\": \"\",\n  \"start\": \"\",\n  \"end\": \"\",\n  \"isAllDay\": \"\",\n  \"location\": \"\",\n  \"message\": \"Saya tidak menemukan acara pada 8 Agustus 2026. Mau coba cari dengan kata kunci atau tanggal lain?\"\n}\n\n---\nInput data: []\nSearch criteria: query: \"tagihan listrik\", start: 2026-07-21T00:00:00+07:00, end: 2027-07-21T23:59:59+07:00\nOutput:\n{\n  \"status\": \"not_found\",\n  \"action\": \"\",\n  \"eventId\": \"\",\n  \"title\": \"\",\n  \"start\": \"\",\n  \"end\": \"\",\n  \"isAllDay\": \"\",\n  \"location\": \"\",\n  \"message\": \"Saya tidak menemukan acara dengan kata kunci \"tagihan listrik\". Mau coba cari dengan kata kunci lain atau sebutkan tanggalnya?\"\n}\n\n---\nInput data: []\nSearch criteria: query: \"\", start: 2026-07-21T00:00:00+07:00, end: 2027-07-21T23:59:59+07:00\nOutput:\n{\n  \"status\": \"not_found\",\n  \"action\": \"\",\n  \"eventId\": \"\",\n  \"title\": \"\",\n  \"start\": \"\",\n  \"end\": \"\",\n  \"isAllDay\": \"\",\n  \"location\": \"\",\n  \"message\": \"Saya tidak menemukan acara yang cocok. Coba sebutkan kata kunci atau tanggal acaranya ya.\"\n}","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"of5dmvfono"}]}},{"id":"of5dmvfono","type":"entity-llm","position":{"x":1946.7849826763324,"y":825.4351724619664},"properties":{"label":"Entity LLM","model":"azure-openai/gpt-4o","description":"","llm_provider":"azure_openai","text_message":"{{node_output}}","entities_schema":[{"name":"status","example":["found"],"description":"Whether a matching calendar event was found. Return \"found\" if the search result array (response_body.data) contains exactly 1 item. Return \"not_found\" if the array is empty."},{"name":"action","example":["delete"],"description":"The next action to take. Return \"delete\" if status is \"found\". Return an empty string if status is \"not_found\"."},{"name":"eventId","example":["nrpivg0459951ar78d4n0r7j70_20260815T233000Z"],"description":"The \"id\" value of the matched event, copied exactly. Only present when status is \"found\" — empty if status is \"not_found\"."},{"name":"message","example":["Saya tidak menemukan acara pada 8 Agustus 2026"],"description":"A friendly message telling the user no matching event was found, referencing the searched keyword and/or date range in human-readable form. Only present when status is \"not_found\" — empty if status is \"found\"."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"6mrnv717v4"}]}},{"id":"6mrnv717v4","type":"if-condition","position":{"x":1944.7849826763324,"y":904.4351724619664},"properties":{"label":"If Condition","combinator":"and","conditions":[{"id":"conditon-1","operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.status.[0]}}","compared_value":"found"},{"operator":{"type":"string","operation":"equals","case_sensitive":false},"source_value":"{{node_output.action.[0]}}","compared_value":"delete"}],"description":""},"next":{"true":[{"type":"continue","target_node":"8ihcrrxvx6"}],"false":[{"type":"continue","target_node":"1oltuh5h0m"}]}},{"id":"8ihcrrxvx6","type":"http-request","position":{"x":1844.4731502072098,"y":1085.1139270429692},"properties":{"url":"https://calender-proxy.qurtifa.my.id/api/calendar","body":{"action":"delete","secret":"{{secret}}","eventId":"{{node_output.eventId.[0]}}"},"label":"HTTP Request","method":"POST","headers":{"Content-Type":"application/json"},"description":"","handle_error":true},"next":{"main":[{"type":"continue","target_node":"kouu25iyqs"}]}},{"id":"6r314da1lq","type":"agent-assistant","position":{"x":2025.2668508048282,"y":1156.7076035381226},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah memberi tahu pengguna bahwa tidak ada acara kalender yang cocok ditemukan untuk dihapus, dan mengajak mereka untuk mencoba pencarian dengan kata kunci atau tanggal lain, dengan nada yang natural, singkat, dan ramah seperti asisten pribadi.\n\nINPUT\nKamu akan menerima kriteria pencarian asli: query (boleh kosong) dan rentang tanggal yang dicari (start, end).\n\nATURAN\n\n1. Sampaikan dengan nada ramah dan singkat, ini bukan pesan error, cuma hasil \"tidak ada yang cocok\". Cukup satu atau dua kalimat pendek saja, jangan lebih dari itu.\n\n2. Sebutkan apa yang dicari dalam bahasa natural: kata kunci (jika ada) dan/atau rentang tanggal, dikonversi ke format tanggal yang mudah dibaca manusia. Jangan pernah menampilkan ISO datetime mentah.\n\n3. Format tanggal:\n   - Satu hari: \"8 Agustus 2026\"\n   - Rentang, bulan sama: \"1 sampai 31 Agustus 2026\"\n   - Rentang, beda bulan: \"30 Juli sampai 2 Agustus 2026\"\n\n4. Kalau rentang tanggal yang dicari adalah rentang default (kurang lebih setahun, artinya pengguna tidak menyebutkan tanggal spesifik), jangan sebutkan rentang tanggalnya sama sekali, itu akan terdengar aneh dan tidak membantu. Cukup fokus ke kata kunci saja (kalau ada), atau buat pesan generik kalau kata kuncinya juga kosong.\n\n5. Tutup dengan satu pertanyaan sederhana, ajak pengguna mencoba kata kunci atau tanggal lain. JANGAN memberi saran kata kunci spesifik yang mengada-ada (misalnya menebak-nebak \"coba cari 'servis mobil' atau 'cuci mobil di bengkel'\"), dan JANGAN menawarkan hal lain di luar itu (misalnya menawarkan membuat reminder baru). Cukup satu ajakan simpel untuk mencoba lagi.\n\n6. Jangan sebutkan field teknis apa pun (query, start, end, status_code, response_body, data).\n\n7. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun. Gunakan kata sambung biasa (misalnya \"sampai\", \"dan\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu).\n\n8. Gunakan tanda kutip lurus biasa (\"...\") jika perlu mengutip judul/kata kunci, jangan gunakan smart quotes/curly quotes (\"…\" atau '…').\n\n9. Jawab dalam bahasa yang sama dengan permintaan asli pengguna. Gunakan Bahasa Indonesia sebagai default jika tidak jelas.\n\nCONTOH\n\nInput: query: \"acara\", start: 2026-08-08T00:00:00+07:00, end: 2026-08-08T23:59:59+07:00\nOutput:\nSaya tidak menemukan acara pada 8 Agustus 2026. Mau coba cari dengan kata kunci atau tanggal lain?\n\nInput: query: \"reminder\", start: 2026-08-01T00:00:00+07:00, end: 2026-08-31T23:59:59+07:00\nOutput:\nSaya tidak menemukan reminder di rentang 1 sampai 31 Agustus 2026. Mau coba dengan kata kunci lain, atau cek bulan yang berbeda?\n\nInput: query: \"\", start: 2026-07-21T00:00:00+07:00, end: 2027-07-21T23:59:59+07:00\nOutput:\nSaya tidak menemukan acara yang cocok. Boleh sebutkan judul atau tanggal acaranya lebih spesifik?\n\nInput: query: \"Cuci mobil\", start: 2026-07-21T00:00:00+07:00, end: 2027-07-21T23:59:59+07:00\nOutput:\nSaya tidak menemukan reminder berjudul \"Cuci mobil\" di kalender kamu. Mau coba kata kunci lain, atau sebutkan tanggalnya?","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"x5cx2ilz28"}]}},{"id":"jot0le4yjx","type":"agent-assistant","position":{"x":1846.600767335984,"y":1231.8335915857547},"properties":{"label":"Agent Assistant","model":"azure-openai/gpt-4o","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah memberi tahu pengguna bahwa acara di Google Calendar mereka berhasil dihapus, dengan nada yang natural, ramah, dan ringkas seperti asisten pribadi yang mengonfirmasi sesuatu ke temannya.\n\nINPUT\nKamu mungkin menerima detail acara yang dihapus (biasanya dari data sebelum penghapusan): title, start, end, isAllDay, location. Namun kadang input yang tersedia hanya konfirmasi teknis penghapusan (misalnya {\"deleted\": true, \"eventId\": \"...\"}) tanpa detail acara lengkap. Dalam kasus itu, gunakan judul acara yang bisa disimpulkan dari pesan pengguna (user_message/message) sebagai referensi, dan jangan memaksakan menyebutkan tanggal atau waktu kalau memang tidak ada datanya di mana pun dalam input.\n\nATURAN\n\n1. Sampaikan dengan nada ramah, ringkas, dan natural, satu atau dua kalimat saja, tidak perlu panjang.\n\n2. Konfirmasi bahwa acaranya sudah berhasil dihapus.\n\n3. Sebutkan acaranya berdasarkan judul, supaya pengguna tahu persis acara mana yang dihapus.\n\n4. Jika data tanggal/waktu acara tersedia (start, end, isAllDay), sertakan juga dalam kalimat supaya lebih jelas:\n   - Sertakan waktu hanya jika isAllDay bernilai false dan memang ada jam spesifik. Jika isAllDay bernilai true, sebutkan itu acara sepanjang hari, tanpa jam.\n   - Format tanggal: satu hari \"8 Agustus 2026\"; dengan jam \"8 Agustus 2026, jam 06:30 sampai 07:30\".\n   - Sertakan lokasi hanya jika ada datanya.\n   Jika data tanggal/waktu/lokasi TIDAK tersedia sama sekali dalam input (hanya ada konfirmasi penghapusan teknis tanpa detail acara), cukup sebutkan judul acaranya saja tanpa mengarang tanggal, waktu, atau lokasi.\n\n5. Jangan sertakan deskripsi acara dalam konfirmasi ini, itu tidak perlu lagi setelah acaranya dihapus.\n\n6. Jangan pernah menampilkan nilai teknis: ID acara, string ISO datetime, JSON, atau output API mentah apa pun.\n\n7. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun. Gunakan kata sambung biasa (misalnya \"sampai\", \"dan\", koma, atau tanda hubung pendek \"-\" jika benar-benar perlu untuk rentang jam).\n\n8. Gunakan tanda kutip lurus biasa (\"...\") saat mengutip judul acara, jangan gunakan smart quotes/curly quotes (\"…\" atau '…').\n\n9. Jawab dalam bahasa yang sama dengan permintaan asli pengguna. Gunakan Bahasa Indonesia sebagai default jika tidak jelas.\n\n10. Akhiri dengan penutup singkat dan ramah yang menawarkan bantuan lebih lanjut, variasikan sedikit frasanya, tidak harus selalu sama persis tiap kali.\n\nCONTOH\n\nInput: title: \"Leg day\", start: 2026-08-16T06:30:00+07:00, end: 2026-08-16T07:30:00+07:00, isAllDay: false, location: \"\"\nOutput:\nAcara \"Leg day\" pada 16 Agustus 2026, jam 06:30 sampai 07:30, sudah berhasil dihapus dari Google Calendar kamu. Ada acara lain yang mau dihapus atau diubah?\n\nInput: title: \"Independence Day Celebration\", start: 2026-08-17T00:00:00+07:00, end: 2026-08-17T23:59:59+07:00, isAllDay: true, location: \"\"\nOutput:\nAcara \"Independence Day Celebration\" pada 17 Agustus 2026, yang berlangsung sepanjang hari, sudah berhasil dihapus dari Google Calendar kamu. Ada yang lain yang bisa aku bantu?\n\nInput: hanya konfirmasi teknis {\"deleted\": true, \"eventId\": \"a3o6jrqu4bcefc639sno4kp75k\"}, dengan referensi judul dari pesan pengguna \"Nongkrong di Kafe\"\nOutput:\nReminder \"Nongkrong di Kafe\" sudah berhasil dihapus dari Google Calendar kamu. Kalau mau hapus atau ubah acara lain, tinggal bilang aja ya.","tool_choice":"none","embed_memory":true,"llm_provider":"azure_openai","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"x5cx2ilz28"}]}},{"id":"nogyb1thsh","type":"set-user-var","position":{"x":869.3070013659477,"y":639.2779748104778},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"l5yz9o9ywk"}]}},{"id":"xcaa7h2rx5","type":"set-user-var","position":{"x":78,"y":428},"properties":{"label":"Set User Variable","variables":[{"var_key":"client_message","data_type":"string","persist":true,"var_value":"{{user_message}}"},{"var_key":"secret","data_type":"string","persist":false,"var_value":"string-acak-panjang-dan-unik-milik-mu"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"7top2smk6c"}]}},{"id":"41karprihv","type":"set-user-var","position":{"x":1210.7416336459046,"y":137.96245244441434},"properties":{"label":"Set User Variable","variables":[{"var_key":"node_data","data_type":"string","persist":false,"var_value":"{{node_output}}"},{"var_key":"client_message","data_type":"string","persist":false,"var_value":"{{user_message}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"ysolk79wg2"}]}},{"id":"tc0utp5v5d","type":"set-user-var","position":{"x":1230.2665414979733,"y":361.1871286436853},"properties":{"label":"Set User Variable","variables":[{"var_key":"node_data","data_type":"string","persist":false,"var_value":"{{node_output}}"},{"var_key":"client_message","data_type":"string","persist":false,"var_value":"{{user_message}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"rpo88fjpi9"}]}},{"id":"00rhbb9hfw","type":"set-user-var","position":{"x":1048.7665414979733,"y":289.6871286436853},"properties":{"label":"Set User Variable","variables":[{"var_key":"node_data","data_type":"string","persist":false,"var_value":"{{node_output}}"},{"var_key":"client_message","data_type":"string","persist":false,"var_value":"{{user_message}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"vy3mg7yu6p"}]}},{"id":"6vxgllsq02","type":"set-user-var","position":{"x":1054.1536488001238,"y":554.3213243052126},"properties":{"label":"Set User Variable","variables":[{"var_key":"node_data","data_type":"string","persist":false,"var_value":"{{node_output}}"},{"var_key":"client_message","data_type":"string","persist":false,"var_value":"{{user_message}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"hlvwgwctz0"}]}},{"id":"k32yzof03r","type":"set-user-var","position":{"x":1047.8070013659476,"y":1494.7779748104776},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"aemnkula29"}]}},{"id":"v9yduqol80","type":"set-user-var","position":{"x":862.477082875325,"y":916.5655303886608},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"8zobg3wh0x"}]}},{"id":"om0xkmimcb","type":"set-user-var","position":{"x":1049.4595275081938,"y":993.7058877700828},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"ayhz9qcbdr"}]}},{"id":"r7gsmdvizg","type":"set-user-var","position":{"x":1224.7244374844406,"y":1274.360386449724},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"96calh926q"}]}},{"id":"r6zhvup605","type":"set-user-var","position":{"x":1042.5526232146638,"y":1197.4744959401146},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"nvuoc79s5b"}]}},{"id":"1oltuh5h0m","type":"set-user-var","position":{"x":2025.0368933991788,"y":1085.4440582793218},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"6r314da1lq"}]}},{"id":"kouu25iyqs","type":"set-user-var","position":{"x":1845.6574206874654,"y":1160.84247740311},"properties":{"label":"Set User Variable","variables":[{"var_key":"message","data_type":"string","persist":false,"var_value":"{{user_message}}"},{"var_key":"edit_data","data_type":"object","persist":false,"var_value":"{{node_output}}"}],"decription":"","description":""},"next":{"main":[{"type":"continue","target_node":"jot0le4yjx"}]}},{"id":"1avfi0zc96","type":"agent-assistant","position":{"x":1766.47791693831,"y":753.6729688762562},"properties":{"label":"Agent Assistant","model":"botika/llm-medium","tools":[],"bot_id":"{{bot.id}}","description":"","input_to_ai":"{{node_output}}","json_schema":"","output_type":"text","task_for_ai":"Tugas kamu adalah menampilkan beberapa acara kalender yang cocok kepada pengguna dan menanyakan mana yang ingin mereka hapus, dengan gaya penyampaian yang natural dan ramah dalam Bahasa Indonesia, bukan dump data teknis.\n\nINPUT\nKamu akan menerima data hasil pencarian acara, biasanya berada di node_output.edit_data, dengan kemungkinan struktur berikut:\n- count: jumlah acara yang ditemukan (string angka di dalam array, contoh: [\"5\"])\n- event_id_if_single: array kosong jika acara yang ditemukan lebih dari satu\n- event_list_if_multiple: array bersarang berisi array acara, di mana tiap acara punya field: id, title, start, end, isAllDay, location\n\nPath persisnya bisa sedikit bervariasi tergantung struktur nesting (event_list_if_multiple bisa berupa array di dalam array), tapi intinya kamu perlu menemukan daftar acara yang perlu ditampilkan ke pengguna.\n\nOUTPUT\nKembalikan hanya satu objek JSON, dalam format compact/single-line, TANPA indentasi, spasi ekstra, atau newline di antara key-key JSON. Tidak ada markdown, penjelasan, atau teks tambahan apa pun di luar objek JSON itu sendiri.\n{\"status\": \"multiple\", \"action\": \"\", \"eventId\": \"\", \"message\": \"<pembuka natural + daftar bernomor + pertanyaan, sebagai plain text>\"}\n\nContoh format yang benar (satu baris, tanpa indentasi): {\"status\":\"multiple\",\"action\":\"\",\"eventId\":\"\",\"message\":\"...\"}\n\nATURAN UNTUK \"message\"\n\n1. Ambil semua acara dari event_list_if_multiple (atau field setara lainnya), urutkan secara kronologis berdasarkan tanggal mulai, lalu tampilkan sebagai daftar bernomor.\n\n2. Untuk setiap acara, tampilkan secara ringkas:\n   - Nomor urut\n   - Judul acara\n   - Tanggal (dan rentang waktu, kecuali kalau memang acara sepanjang hari)\n   - Lokasi, hanya jika ada isinya\n\n3. Soal waktu:\n   - Jika isAllDay bernilai true, tampilkan sebagai \"sepanjang hari\" tanpa jam.\n   - Jika isAllDay bernilai false TAPI rentang start-end-nya secara efektif mencakup seluruh hari (misalnya start jam 00:00 dan end jam 23:59/23:59:59 di tanggal yang sama), perlakukan itu SAMA seperti acara sepanjang hari dalam tampilan. Jangan tampilkan jam presisi seperti \"00:00-23:59\" karena terasa aneh dan mengganggu keterbacaan, apalagi kalau daftarnya panjang. Cukup tampilkan tanggalnya saja.\n   - Kalau memang ada jam spesifik yang bermakna sebagai jadwal harian (misalnya 09:00-10:00), tampilkan rentang jamnya.\n\n4. Jangan tampilkan: id (meskipun kosong), field teknis, atau nilai apa pun yang tidak relevan bagi pengguna.\n\n5. Format tanggal:\n   - Satu hari: \"8 Agustus 2026\"\n   - Dengan jam: \"8 Agustus 2026, jam 09:00 sampai 10:00\"\n\n6. JANGAN PERNAH menggunakan karakter em dash/en dash (\"—\" atau \"–\") di mana pun, termasuk sebagai pemisah antara judul dan tanggal. Gunakan tanda hubung pendek biasa \"-\" atau kata seperti \"pada\", \"tanggal\" sebagai penghubung.\n\n7. Jika acara yang ditemukan cukup banyak (lebih dari sekitar 4-5) dan terlihat jelas merupakan rangkaian acara berulang dengan judul yang sama (misalnya acara mingguan yang sama diulang beberapa kali dalam sebulan), tambahkan satu kalimat pembuka yang natural untuk memberi konteks sebelum daftarnya, misalnya menyebutkan bahwa itu tampaknya rangkaian acara berulang. Tetap tampilkan semua acaranya secara bernomor lengkap karena pengguna perlu memilih nomor mana yang mau dihapus, jangan memotong atau merangkum sebagian daftar begitu saja.\n\n8. Tutup dengan kalimat natural yang meminta pengguna membalas dengan nomor acara yang ingin dihapus (atau menyebutkan kalau mau hapus semuanya sekaligus jika itu terlihat masuk akal dari konteks pesan pengguna, misalnya kalau mereka minta hapus \"semua reminder Cuci baju bulan Agustus\"). Variasikan sedikit frasanya, tidak harus selalu sama persis.\n\n9. Gunakan tanda kutip lurus biasa (\"...\") jika perlu mengutip judul acara, jangan gunakan smart quotes/curly quotes (\"…\" atau '…').\n\n10. Kamu boleh sesekali pakai emoji, tapi HANYA emoji ekspresi wajah (facial expression), misalnya 🙂 atau 😊, maksimal satu per pesan dan diletakkan di akhir kalimat. JANGAN pakai emoji jenis lain (kalender 📅, centang ✅, jempol 👍, dan sejenisnya).\n\n11. Jawab dalam bahasa yang sama dengan permintaan asli pengguna. Gunakan Bahasa Indonesia sebagai default jika tidak jelas.\n\n12. Jaga nada tetap ramah, ringkas, dan natural seperti asisten pribadi yang membantu, bukan laporan sistem.\n\n13. action dan eventId selalu tetap kosong dalam kasus ini, karena acara spesifik belum dipilih oleh pengguna.\n\nCONTOH\n\nContoh 1 (banyak acara berulang, isAllDay false tapi efektif sepanjang hari, dari data seperti kasus \"Cuci baju bulan Agustus\"):\nInput event_list_if_multiple:\n[\n  {\"id\":\"\",\"title\":\"Cuci baju\",\"start\":\"2026-08-02T00:00:00+07:00\",\"end\":\"2026-08-02T23:59:59+07:00\",\"isAllDay\":false,\"location\":\"\"},\n  {\"id\":\"\",\"title\":\"Cuci baju\",\"start\":\"2026-08-09T00:00:00+07:00\",\"end\":\"2026-08-09T23:59:59+07:00\",\"isAllDay\":false,\"location\":\"\"},\n  {\"id\":\"\",\"title\":\"Cuci baju\",\"start\":\"2026-08-16T00:00:00+07:00\",\"end\":\"2026-08-16T23:59:59+07:00\",\"isAllDay\":false,\"location\":\"\"},\n  {\"id\":\"\",\"title\":\"Cuci baju\",\"start\":\"2026-08-23T00:00:00+07:00\",\"end\":\"2026-08-23T23:59:59+07:00\",\"isAllDay\":false,\"location\":\"\"},\n  {\"id\":\"\",\"title\":\"Cuci baju\",\"start\":\"2026-08-30T00:00:00+07:00\",\"end\":\"2026-08-30T23:59:59+07:00\",\"isAllDay\":false,\"location\":\"\"}\n]\nOutput:\n{\"status\":\"multiple\",\"action\":\"\",\"eventId\":\"\",\"message\":\"Aku menemukan 5 reminder \"Cuci baju\" di bulan Agustus 2026 nih:\\n1. Cuci baju pada 2 Agustus 2026\\n2. Cuci baju pada 9 Agustus 2026\\n3. Cuci baju pada 16 Agustus 2026\\n4. Cuci baju pada 23 Agustus 2026\\n5. Cuci baju pada 30 Agustus 2026\\n\\nMau hapus yang nomor berapa nih? Atau kalau mau dihapus semuanya sekaligus, bilang aja ya 🙂\"}\n\nContoh 2 (dua acara, judul beda, ada jam spesifik):\nInput:\n[\n  {\"id\":\"abc123\",\"title\":\"Leg day\",\"start\":\"2026-08-16T06:30:00+07:00\",\"end\":\"2026-08-16T07:30:00+07:00\",\"isAllDay\":false,\"location\":\"\"},\n  {\"id\":\"def456\",\"title\":\"Leg day\",\"start\":\"2026-08-23T06:30:00+07:00\",\"end\":\"2026-08-23T07:30:00+07:00\",\"isAllDay\":false,\"location\":\"\"}\n]\nOutput:\n{\"status\":\"multiple\",\"action\":\"\",\"eventId\":\"\",\"message\":\"Aku menemukan beberapa acara yang cocok nih:\\n1. Leg day pada 16 Agustus 2026, jam 06:30 sampai 07:30\\n2. Leg day pada 23 Agustus 2026, jam 06:30 sampai 07:30\\n\\nAcara nomor berapa yang mau kamu hapus?\"}","tool_choice":"none","embed_memory":true,"llm_provider":"botika","advanced_settings":false,"validation_errors":[],"input_to_ai_setting":{"type":"variable","source":"previous_node"},"validation_warnings":[],"embed_knowledge_base":true,"enable_json_structured_output":false,"process_tool_execution_result":false},"next":{"main":[{"type":"continue","target_node":"uvgufkwkhb"}]}},{"id":"uvgufkwkhb","type":"entity-llm","position":{"x":1766.47791693831,"y":828.1729688762562},"properties":{"label":"Entity LLM","model":"botika/llm-medium","description":"","llm_provider":"botika","text_message":"{{node_output}}","entities_schema":[{"name":"agent_message","example":["Aku menemukan 5 reminder \"Cuci baju\" di bulan Agustus 2026 nih:\\n1. Cuci baju pada 2 Agustus 2026\\n2. Cuci baju pada 9 Agustus 2026\\n3. Cuci baju pada 16 Agustus 2026\\n4. Cuci baju pada 23 Agustus 2026\\n5. Cuci baju pada 30 Agustus 2026\\n\\nMau hapus yang nomor berapa nih? Atau kalau mau dihapus semuanya sekaligus, bilang aja ya 🙂"],"description":"Pesan yang akan disampaikan ke pengguna. Ambil dari field message di dalam node_output, yang merupakan string JSON ter-encode, jadi harus di-parse (JSON.parse) terlebih dahulu sebelum mengambil isi message-nya. Jangan sertakan karakter escape (\\n, \\\") mentah, pesan harus tampil sebagai teks biasa dengan baris baru yang sudah terbentuk."}],"validation_errors":[],"validation_warnings":[]},"next":{"main":[{"type":"continue","target_node":"qc6nkm70iz"}]}},{"id":"qc6nkm70iz","type":"response-formatter","position":{"x":1766.47791693831,"y":902.6729688762562},"properties":{"label":"Response Formatter","description":"","response_format":{"default":[{"mode":"use_ai","type":null,"is_active":false},{"mode":"manual_setup","text":"{{node_output.agent_message.[0]}}","type":"text","text_setting":{"type":"text","source":"previous_node"}}]}},"next":{"main":[{"type":"continue","target_node":"s5sgak6qti"}]}},{"id":"53sjrhm0jg","type":"auto-integration","position":{"x":282.72524749135306,"y":1285.8620458146243},"properties":{"text":"{{node_output}}","label":"Auto Integration","operation":"send_message","description":"","save_chatlog":true,"source_input":"previous_node_output","save_as_history_message":true},"next":{"main":[{"type":"stop","target_node":"xcaa7h2rx5"}]}}]}
+```
+
+</details>
+
+3. *Paste* kode tersebut di workflow Botika untuk meng-*import* seluruh *node*.
 5. **Sesuaikan Persona** — klik tab **Persona** di sidebar kiri, lalu isi dengan teks persona di bagian [Chatbot Persona](#chatbot-persona) di atas.
 6. Sesuaikan secret pada node *Set User Variabel* (setelah node *Start*) dan node *Log Monitoring* — ganti dengan `PROXY_SECRET` yang sudah Anda buat.
 7. Pastikan endpoint di setiap node *HTTP Request* sudah mengarah ke URL Vercel Anda (misal: `https://<nama-project-anda>.vercel.app/api/calendar`).
