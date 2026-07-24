@@ -1,18 +1,10 @@
-// get-refresh-token.js
-// Jalankan sekali di terminal
-// node get-refresh-token.js
-//
-// Fungsi get-refresh-token.js ini untuk mendapatkan refresh token dari Google OAuth2 sebagai langkah awal setup server
-// Jalankan sekali saja, lalu simpan refresh token yang dihasilkan ke environment variable GOOGLE_REFRESH_TOKEN di file .env
-
 const { google } = require('googleapis');
 const readline = require('readline');
 
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID; // Ganti dengan CLIENT_ID kamu
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET; // Ganti dengan CLIENT_SECRET kamu
+const CLIENT_ID = 'ISI_CLIENT_ID_KAMU'; // Ganti dengan CLIENT_ID kamu
+const CLIENT_SECRET = 'ISI_CLIENT_SECRET_KAMU'; // Ganti dengan CLIENT_SECRET kamu
 const BASE_URL = 'http://localhost:3000'; // Ganti dengan base URL server kamu
 
-// Redirect URI
 const REDIRECT_URI = `${BASE_URL}/oauth2callback`;
 
 const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
