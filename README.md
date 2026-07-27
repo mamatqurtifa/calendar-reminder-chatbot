@@ -1,13 +1,13 @@
 # Setup Chatbot Calendar Reminder
 
 Proxy server-side berbasis Express.js untuk mengakses Google Calendar API menggunakan OAuth2 refresh token.
-Client (n8n, Make, dsb.) cukup memanggil satu endpoint HTTP tanpa perlu mengelola OAuth sendiri.
+Client cukup memanggil satu endpoint HTTP tanpa perlu mengelola OAuth sendiri.
 
 ---
 
 ## Chatbot Persona
 
-Untuk memandu pembuatan agent AI (Agent Assistant), berikut adalah persona yang bisa Anda gunakan pada pengaturan *Persona*:
+Untuk memandu pembuatan chatbot, berikut adalah persona yang bisa Anda gunakan pada pengaturan *Persona*:
 
 > You are Calendar Reminder Assistant, a helpful and reliable AI assistant that helps users manage their Google Calendar. You can create, view, search, update, delete, and organize calendar events and reminders through natural conversations. Always understand the user's intent, ask for any missing required information when necessary, and provide clear, concise, and friendly responses. When handling dates and times, interpret relative expressions such as "today", "tomorrow", "next week", or "last Monday" accurately based on the current date. Your goal is to make scheduling simple, efficient, and effortless for every user.
 
@@ -19,7 +19,7 @@ Untuk memandu pembuatan agent AI (Agent Assistant), berikut adalah persona yang 
 
 Vercel membutuhkan repositori GitHub untuk di-deploy. Anda harus membuat repositori milik Anda sendiri yang berisi 2 file utama (`package.json` dan `index.js`).
 
-1. Buka [github.com](https://github.com) dan buat repository baru (misal: `calendar-bot-proxy`).
+1. Buka [github.com](https://github.com) dan buat repository baru (misal: `calendar-chatbot`).
 2. Di dalam repository tersebut, buat 2 file baru dan *copy-paste* kode di bawah ini ke masing-masing file:
 
 **1. package.json**
@@ -401,16 +401,27 @@ app.listen(PORT, () => {
 });
 ```
 
-3. Setelah kedua file tersebut di-*commit* ke repository GitHub Anda, *copy* URL repository Anda (contoh: `https://github.com/username/calendar-bot-proxy`).
+3. Setelah kedua file tersebut di-*commit* ke repository GitHub Anda, *copy* URL repository Anda (contoh: `https://github.com/username/calendar-chatbot`).
 4. Buka [vercel.com](https://vercel.com) dan **login** ke akun Anda.
 5. Dari dashboard Vercel, klik **Add New Project**.
+
+   ![Vercel Add New Project](public/images/vercel-add-new-project.png)
+
 6. Pada bagian bawah halaman, temukan **Import Third-Party Git Repository**, lalu *paste* link URL repository Anda ke kotak tersebut.
+
+   ![Vercel Import Link](public/images/vercel-import-link.png)
+
 7. Klik **Continue** — **lewati pengisian env var dulu**, biarkan kosong, langsung klik **Deploy**.
+
+   ![Vercel Deploy](public/images/vercel-deploy.png)
+
 8. Setelah deploy selesai, **salin URL deployment Anda**, contoh:
    ```
    https://calendar-reminder-proxy.vercel.app
    ```
    *(Simpan URL ini untuk langkah selanjutnya)*
+
+   ![Vercel Dashboard URL Backend](public/images/vercel-dashboard-url-backend.png)
 
 ---
 
