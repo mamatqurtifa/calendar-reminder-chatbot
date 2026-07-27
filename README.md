@@ -20,7 +20,12 @@ Untuk memandu pembuatan chatbot, berikut adalah persona yang bisa Anda gunakan p
 Vercel membutuhkan repositori GitHub untuk di-deploy. Anda harus membuat repositori milik Anda sendiri yang berisi 2 file utama (`package.json` dan `index.js`).
 
 1. Buka [github.com](https://github.com) dan buat repository baru (misal: `calendar-chatbot`).
+
+   ![GitHub Create Repo](public/images/github-create-repo.png)
+
 2. Di dalam repository tersebut, buat 2 file baru dan *copy-paste* kode di bawah ini ke masing-masing file:
+
+   ![GitHub Create File](public/images/github-create-file.png)
 
 **1. package.json**
 ```json
