@@ -402,7 +402,12 @@ app.listen(PORT, () => {
 ```
 
 3. Setelah kedua file tersebut di-*commit* ke repository GitHub Anda, *copy* URL repository Anda (contoh: `https://github.com/username/calendar-chatbot`).
+
+   ![GitHub Copy Repo Link](public/images/github-copy-repo-link.png)
+
 4. Buka [vercel.com](https://vercel.com) dan **login** ke akun Anda.
+
+   ![Vercel Login](public/images/vercel-login.png)
 5. Dari dashboard Vercel, klik **Add New Project**.
 
    ![Vercel Add New Project](public/images/vercel-add-new-project.png)
