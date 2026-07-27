@@ -417,7 +417,7 @@ app.listen(PORT, () => {
 
    ![Vercel Add New Project](public/images/vercel-add-new-project.png)
 
-6. Pada bagian bawah halaman, temukan **Import Third-Party Git Repository**, lalu *paste* link URL repository Anda ke kotak tersebut.
+6. Pada bagian **Let's build something new**, *paste* link URL repository GitHub Anda ke kotak yang tersedia.
 
    ![Vercel Import Link](public/images/vercel-import-link.png)
 
@@ -438,9 +438,17 @@ app.listen(PORT, () => {
 ### 2. Buat Project di Google Cloud Console
 
 1. Buka [Google Cloud Console](https://console.cloud.google.com/).
-2. Buat Project baru (misal: `Calendar Proxy`).
+
+   ![Google Cloud Console](public/images/google-cloud-console.png)
+
+2. Buat Project baru (misal: `Calendar Chatbot`).
+
+   ![Google Cloud Console Create Project](public/images/google-cloud-console-create-project.png)
+
 3. Buka menu **APIs & Services** > **Library**.
 4. Cari **Google Calendar API** lalu klik **Enable**.
+
+   ![Google Cloud Console Enable Calendar API](public/images/google-cloud-console-enable-calendar-api.png)
 
 ---
 
@@ -449,7 +457,7 @@ app.listen(PORT, () => {
 1. Ke menu **APIs & Services** > **OAuth consent screen**.
 2. Pilih **External** > klik **Create**.
 3. Isi informasi wajib:
-   - **App name**: (bebas, misal: Calendar Bot Proxy)
+   - **App name**: (bebas, misal: Calendar Chatbot)
    - **User support email**: (email Anda)
    - **Developer contact info**: (email Anda)
 4. Klik **Save and Continue** sampai selesai (tidak perlu add scope secara spesifik di sini).
