@@ -446,6 +446,9 @@ app.listen(PORT, () => {
    ![Google Cloud Console Create Project](public/images/google-cloud-console-create-project.png)
 
 3. Buka menu **APIs & Services** > **Library**.
+
+   ![Google Cloud Console Library](public/images/google-cloud-console-library.png)
+
 4. Cari **Google Calendar API** lalu klik **Enable**.
 
    ![Google Cloud Console Enable Calendar API](public/images/google-cloud-console-enable-calendar-api.png)
@@ -455,13 +458,24 @@ app.listen(PORT, () => {
 ### 3. Konfigurasi OAuth Consent Screen
 
 1. Ke menu **APIs & Services** > **OAuth consent screen**.
+
+   ![Google Cloud Console OAuth Consent Screen](public/images/google-cloud-console-oauth-consent-screen.png)
+
 2. Pilih **External** > klik **Create**.
+
+   ![Google Cloud Console Create OAuth Consent Screen](public/images/google-cloud-console-create-oauth-consent-screen.png)
+
 3. Isi informasi wajib:
    - **App name**: (bebas, misal: Calendar Chatbot)
    - **User support email**: (email Anda)
    - **Developer contact info**: (email Anda)
+
+   ![Google Cloud Console OAuth Consent Screen App Info](public/images/google-cloud-console-oauth-consent-screen-app-info.png)
+
 4. Klik **Save and Continue** sampai selesai (tidak perlu add scope secara spesifik di sini).
 5. Pada halaman ringkasan, klik **Publish App** (agar statusnya menjadi *In production* dan token tidak kadaluarsa dalam 7 hari).
+
+   ![Google Cloud Console OAuth Consent Screen Publish](public/images/google-cloud-console-oauth-consent-screen-publish.png)
 
 ---
 
