@@ -6,3 +6,4 @@ yarn-error.log*
 pnpm-debug.log*
 *.log
 update_readme.js
+update_workflow.js

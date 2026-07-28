@@ -173,20 +173,31 @@ async function addEvent(calendar, calendarId, body) {
   const startDate = parseDateTime(body.start);
   const endDate = parseDateTime(body.end);
 
-  if (!isAllDay && startDate.getTime() === endDate.getTime()) {
-    endDate.setHours(endDate.getHours() + 1);
+  let startObj, endObj;
+  if (isAllDay) {
+    const startStr = body.start.split('T')[0];
+    let endStr = body.end.split('T')[0];
+    if (startStr === endStr) {
+      const d = new Date(startStr + 'T00:00:00Z');
+      d.setUTCDate(d.getUTCDate() + 1);
+      endStr = d.toISOString().split('T')[0];
+    }
+    startObj = { date: startStr };
+    endObj = { date: endStr };
+  } else {
+    if (startDate.getTime() === endDate.getTime()) {
+      endDate.setHours(endDate.getHours() + 1);
+    }
+    startObj = { dateTime: startDate.toISOString(), timeZone };
+    endObj = { dateTime: endDate.toISOString(), timeZone };
   }
 
   const requestBody = {
     summary: title,
     description: cleanString(body.description),
     location: cleanString(body.location),
-    start: isAllDay
-      ? { date: body.start.split('T')[0] }
-      : { dateTime: startDate.toISOString(), timeZone },
-    end: isAllDay
-      ? { date: body.end.split('T')[0] }
-      : { dateTime: endDate.toISOString(), timeZone },
+    start: startObj,
+    end: endObj,
     reminders: buildReminders(body.reminders),
   };
 
@@ -219,16 +230,23 @@ async function editEvent(calendar, calendarId, body) {
     const startDate = parseDateTime(body.start);
     const endDate = parseDateTime(body.end);
 
-    if (!isAllDay && startDate.getTime() === endDate.getTime()) {
-      endDate.setHours(endDate.getHours() + 1);
+    if (isAllDay) {
+      const startStr = body.start.split('T')[0];
+      let endStr = body.end.split('T')[0];
+      if (startStr === endStr) {
+        const d = new Date(startStr + 'T00:00:00Z');
+        d.setUTCDate(d.getUTCDate() + 1);
+        endStr = d.toISOString().split('T')[0];
+      }
+      patch.start = { date: startStr, dateTime: null };
+      patch.end = { date: endStr, dateTime: null };
+    } else {
+      if (startDate.getTime() === endDate.getTime()) {
+        endDate.setHours(endDate.getHours() + 1);
+      }
+      patch.start = { dateTime: startDate.toISOString(), timeZone, date: null };
+      patch.end = { dateTime: endDate.toISOString(), timeZone, date: null };
     }
-
-    patch.start = isAllDay
-      ? { date: body.start.split('T')[0] }
-      : { dateTime: startDate.toISOString(), timeZone };
-    patch.end = isAllDay
-      ? { date: body.end.split('T')[0] }
-      : { dateTime: endDate.toISOString(), timeZone };
   }
   if (body.reminders) {
     const builtReminders = buildRemindersOrNull(body.reminders);
