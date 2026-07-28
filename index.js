@@ -211,7 +211,9 @@ async function addEvent(calendar, calendarId, body) {
 
 // ACTION EDIT - Edit reminder/event yang sudah ada (partial update)
 async function editEvent(calendar, calendarId, body) {
-  if (!body.eventId) throw new Error('Parameter eventId wajib diisi');
+  if (!body.eventId && (!body.eventIds || !Array.isArray(body.eventIds))) {
+    throw new Error('Parameter eventId (string) atau eventIds (array) wajib diisi');
+  }
 
   const patch = {};
   if (body.title) {
@@ -253,13 +255,47 @@ async function editEvent(calendar, calendarId, body) {
     if (builtReminders) patch.reminders = builtReminders;
   }
 
-  const result = await calendar.events.patch({
-    calendarId,
-    eventId: body.eventId,
-    requestBody: patch,
-  });
+  let rawIds = body.eventIds || body.eventId || [];
+  if (!Array.isArray(rawIds)) rawIds = [rawIds];
+  
+  // Filter out empty strings or unresolved botika templates
+  const idsToEdit = rawIds.filter(id => id && typeof id === 'string' && id.trim() !== '' && !id.includes('{{'));
+  
+  if (idsToEdit.length === 0) {
+    throw new Error('Tidak ada eventId yang valid untuk diedit');
+  }
 
-  return formatEvent(result.data);
+  const editedIds = [];
+  const failedIds = [];
+  const editedEvents = [];
+
+  for (const id of idsToEdit) {
+    try {
+      const result = await calendar.events.patch({
+        calendarId,
+        eventId: id,
+        requestBody: patch,
+      });
+      editedEvents.push(formatEvent(result.data));
+      editedIds.push(id);
+    } catch (error) {
+      console.error(`Gagal mengedit eventId ${id}:`, error.message);
+      failedIds.push({ id, reason: error.message });
+    }
+  }
+
+  // Backwards compatibility untuk single eventId
+  if (!body.eventIds && editedEvents.length === 1 && failedIds.length === 0) {
+    return editedEvents[0];
+  }
+
+  return {
+    edited: true,
+    editedCount: editedIds.length,
+    editedIds,
+    failedIds,
+    events: editedEvents
+  };
 }
 
 // ACTION: DELETE - Hapus reminder/event (bisa single atau multiple)
@@ -268,7 +304,16 @@ async function deleteEvent(calendar, calendarId, body) {
     throw new Error('Parameter eventId (string) atau eventIds (array) wajib diisi');
   }
 
-  const idsToDelete = body.eventIds ? body.eventIds : [body.eventId];
+  let rawIds = body.eventIds || body.eventId || [];
+  if (!Array.isArray(rawIds)) rawIds = [rawIds];
+  
+  // Filter out empty strings or unresolved botika templates
+  const idsToDelete = rawIds.filter(id => id && typeof id === 'string' && id.trim() !== '' && !id.includes('{{'));
+
+  if (idsToDelete.length === 0) {
+    throw new Error('Tidak ada eventId yang valid untuk dihapus');
+  }
+
   const deletedIds = [];
   const failedIds = [];
 

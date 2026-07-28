@@ -85,7 +85,7 @@ Creates a new event or reminder.
 Updates an existing event. Only the provided optional fields will be updated (partial update).
 
 **Required Parameters:**
-- `eventId` (string): The Google Calendar Event ID to edit.
+- `eventId` (string) OR `eventIds` (array of strings): The Google Calendar Event ID(s) to edit. If multiple IDs are provided, the same updates will be applied to all.
 
 **Optional Parameters:**
 - `title` (string): New title.
@@ -102,8 +102,26 @@ Updates an existing event. Only the provided optional fields will be updated (pa
 {
   "secret": "your_proxy_secret",
   "action": "edit",
-  "eventId": "abcdef1234567890",
+  "eventIds": ["abcdef1234567890", "zyxwv0987654321"],
   "title": "Updated Meeting Title"
+}
+```
+
+**Response Format (Batch Edit):**
+Returns a JSON object detailing the results:
+```json
+{
+  "ok": true,
+  "data": {
+    "edited": true,
+    "editedCount": 2,
+    "editedIds": ["abcdef1234567890", "zyxwv0987654321"],
+    "failedIds": [],
+    "events": [
+      { /* Formatted event object 1 */ },
+      { /* Formatted event object 2 */ }
+    ]
+  }
 }
 ```
 
