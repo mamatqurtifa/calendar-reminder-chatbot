@@ -295,12 +295,32 @@ async function editEvent(calendar, calendarId, body) {
   return formatEvent(result.data);
 }
 
-// ACTION: DELETE - Hapus reminder/event
+// ACTION: DELETE - Hapus reminder/event (bisa single atau multiple)
 async function deleteEvent(calendar, calendarId, body) {
-  if (!body.eventId) throw new Error('Parameter eventId wajib diisi');
+  if (!body.eventId && (!body.eventIds || !Array.isArray(body.eventIds))) {
+    throw new Error('Parameter eventId (string) atau eventIds (array) wajib diisi');
+  }
 
-  await calendar.events.delete({ calendarId, eventId: body.eventId });
-  return { deleted: true, eventId: body.eventId };
+  const idsToDelete = body.eventIds ? body.eventIds : [body.eventId];
+  const deletedIds = [];
+  const failedIds = [];
+
+  for (const id of idsToDelete) {
+    try {
+      await calendar.events.delete({ calendarId, eventId: id });
+      deletedIds.push(id);
+    } catch (error) {
+      console.error(`Gagal menghapus eventId ${id}:`, error.message);
+      failedIds.push({ id, reason: error.message });
+    }
+  }
+
+  return { 
+    deleted: true, 
+    deletedCount: deletedIds.length,
+    deletedIds,
+    failedIds
+  };
 }
 
 // ACTION: SEARCH - Cari reminder berdasarkan kata kunci
