@@ -10,17 +10,22 @@ This is the single endpoint used for all calendar operations. The operation perf
 
 #### Authentication
 
-All requests to this endpoint require a `secret` key in the JSON body, which must match the `PROXY_SECRET` environment variable configured in the server.
+All requests to this endpoint require a `userId` to identify the authenticated Google account. You can provide this in two ways:
+1.  **Header**: `Authorization: Bearer <userId>`
+2.  **Body**: Include `"userId": "<userId>"` in the JSON body.
+
+If the user has not authenticated yet, the API will return a `401 Unauthorized` response containing a `loginUrl`.
 
 #### Headers
 
 - `Content-Type: application/json`
+- `Authorization: Bearer <userId>` (Optional, if `userId` is not in body)
 
 #### Common Request Body Parameters
 
 | Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `secret` | string | Yes | The proxy secret key for authentication. |
+| `userId` | string | Yes* | The unique ID of the user (*if not in header). |
 | `action` | string | Yes | The operation to perform (`list`, `add`, `edit`, `delete`, `search`). |
 | `calendarId` | string | No | The ID of the Google Calendar to target. Defaults to `primary` or the value in `GOOGLE_CALENDAR_ID`. |
 
@@ -38,7 +43,7 @@ Retrieves a list of events within a specific time range.
 **Example Request:**
 ```json
 {
-  "secret": "your_proxy_secret",
+  "userId": "user123",
   "action": "list",
   "start": "2023-10-01T00:00:00Z",
   "end": "2023-10-31T23:59:59Z"
@@ -69,7 +74,7 @@ Creates a new event or reminder.
 **Example Request:**
 ```json
 {
-  "secret": "your_proxy_secret",
+  "userId": "user123",
   "action": "add",
   "title": "Meeting with team",
   "start": "2023-10-15T10:00:00",
@@ -100,7 +105,7 @@ Updates an existing event. Only the provided optional fields will be updated (pa
 **Example Request:**
 ```json
 {
-  "secret": "your_proxy_secret",
+  "userId": "user123",
   "action": "edit",
   "eventIds": ["abcdef1234567890", "zyxwv0987654321"],
   "title": "Updated Meeting Title"
@@ -135,7 +140,7 @@ Deletes a specific event or multiple events from the calendar.
 **Example Request (Single Event):**
 ```json
 {
-  "secret": "your_proxy_secret",
+  "userId": "user123",
   "action": "delete",
   "eventId": "abcdef1234567890"
 }
@@ -144,7 +149,7 @@ Deletes a specific event or multiple events from the calendar.
 **Example Request (Multiple Events):**
 ```json
 {
-  "secret": "your_proxy_secret",
+  "userId": "user123",
   "action": "delete",
   "eventIds": [
     "abcdef1234567890",
@@ -164,7 +169,7 @@ Searches for events matching a specific keyword query.
 **Example Request:**
 ```json
 {
-  "secret": "your_proxy_secret",
+  "userId": "user123",
   "action": "search",
   "query": "Meeting",
   "start": "2023-01-01T00:00:00Z"
@@ -205,3 +210,63 @@ Searches for events matching a specific keyword query.
   "recurringEventId": null
 }
 ```
+
+---
+
+### Authentication & Utility Endpoints
+
+These endpoints manage the OAuth 2.0 flow and user sessions.
+
+#### `POST /api/auth/check`
+Checks if a `userId` has an active Google Calendar session (refresh token).
+
+**Request Body:**
+```json
+{
+  "userId": "user123"
+}
+```
+
+**Response (Authenticated):**
+```json
+{
+  "ok": true,
+  "message": "Authenticated"
+}
+```
+
+**Response (Not Authenticated):**
+```json
+{
+  "ok": false,
+  "error": "Not authenticated",
+  "loginUrl": "http://<your-server-url>/auth/login?userId=user123"
+}
+```
+
+#### `POST /api/auth/email`
+Retrieves the email address of the connected Google Account for a specific `userId`.
+
+**Request Body:**
+```json
+{
+  "userId": "user123"
+}
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "data": {
+    "email": "user@gmail.com"
+  }
+}
+```
+
+#### `GET /auth/login`
+**(Public Endpoint)** Redirects the user to the Google OAuth Consent Screen. 
+**Required Query Parameter:** `userId` (e.g., `/auth/login?userId=user123`).
+
+#### `GET /auth/callback`
+**(Public Endpoint)** Handles the callback from Google after the user grants permission. It exchanges the authorization code for a refresh token, saves it in Redis, and redirects back to the frontend.

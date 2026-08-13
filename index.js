@@ -1,95 +1,272 @@
-// index.js
+require("dotenv").config();
+const express = require("express");
+const { google } = require("googleapis");
+const Redis = require("ioredis");
 
-require('dotenv').config();
-const express = require('express');
-const { google } = require('googleapis');
+// REDIS SETUP
+const redisUrl = process.env.REDIS_URL;
+let redisClient = null;
 
-// GOOGLE CALENDAR HELPERS
-function getOAuth2Client() {
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
-  );
-
-  oauth2Client.setCredentials({
-    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+if (redisUrl) {
+  redisClient = new Redis(redisUrl, {
+    retryStrategy(times) {
+      const delay = Math.min(times * 50, 2000);
+      return delay;
+    },
   });
 
-  return oauth2Client;
+  redisClient.on("error", (err) => {
+    console.error("Redis connection error:", err);
+  });
+} else {
+  console.warn(
+    "REDIS_URL is not defined in environment variables. Redis will not be connected.",
+  );
 }
 
-function getCalendarClient() {
-  const auth = getOAuth2Client();
-  return google.calendar({ version: 'v3', auth });
+async function saveUserToken(userId, token) {
+  if (!redisClient) throw new Error("Redis client is not initialized.");
+  await redisClient.set(userId, token);
 }
 
-const DEFAULT_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID || 'primary';
-const DEFAULT_TIMEZONE = process.env.DEFAULT_TIMEZONE || 'Asia/Jakarta';
+async function getUserToken(userId) {
+  if (!redisClient) throw new Error("Redis client is not initialized.");
+  return await redisClient.get(userId);
+}
+
+// AUTH SETUP
+function createOAuth2Client() {
+  return new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT_URI,
+  );
+}
+
+async function loginHandler(req, res) {
+  const { userId } = req.query;
+  if (!userId) return res.status(400).send("userId is required");
+
+  const oauth2Client = createOAuth2Client();
+  const scopes = [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/userinfo.email",
+  ];
+
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: scopes,
+    state: userId,
+    prompt: "consent",
+  });
+
+  res.redirect(url);
+}
+
+async function callbackHandler(req, res) {
+  const { code, state, error } = req.query;
+
+  if (error) {
+    console.error("Google OAuth Error:", error);
+    return res.status(400).send(`Authentication failed: ${error}`);
+  }
+
+  if (!code || !state) return res.status(400).send("Missing code or state");
+
+  const userId = state;
+  const oauth2Client = createOAuth2Client();
+
+  try {
+    const { tokens } = await oauth2Client.getToken(code);
+
+    if (tokens.refresh_token) {
+      await saveUserToken(userId, tokens.refresh_token);
+    } else {
+      const existingToken = await getUserToken(userId);
+      if (!existingToken) {
+        console.warn(
+          `No refresh token received for user ${userId} and none exists in Redis.`,
+        );
+      }
+    }
+
+    const redirectUrl = process.env.FRONTEND_REDIRECT_URL || "/";
+    res.redirect(redirectUrl);
+  } catch (err) {
+    console.error("Error exchanging code for token:", err);
+    res.status(500).send("Internal Server Error during authentication");
+  }
+}
+
+async function checkAuthHandler(req, res) {
+  const { userId } = req.body;
+  if (!userId)
+    return res.status(400).json({ ok: false, error: "userId is required" });
+
+  try {
+    const token = await getUserToken(userId);
+    if (token) {
+      return res.json({ ok: true, message: "Authenticated" });
+    } else {
+      const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
+      return res.json({ ok: false, error: "Not authenticated", loginUrl });
+    }
+  } catch (err) {
+    console.error("Redis error during auth check:", err);
+    return res.status(500).json({ ok: false, error: "Internal Server Error" });
+  }
+}
+
+async function getEmailHandler(req, res) {
+  const { userId } = req.body;
+  if (!userId)
+    return res.status(400).json({ ok: false, error: "userId is required" });
+
+  try {
+    const token = await getUserToken(userId);
+    if (!token) {
+      const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
+      return res
+        .status(401)
+        .json({ ok: false, error: "Not authenticated", loginUrl });
+    }
+
+    const oauth2Client = createOAuth2Client();
+    oauth2Client.setCredentials({ refresh_token: token });
+
+    const oauth2 = google.oauth2({ auth: oauth2Client, version: "v2" });
+    const userInfo = await oauth2.userinfo.get();
+
+    return res.json({ ok: true, data: { email: userInfo.data.email } });
+  } catch (err) {
+    console.error("Error fetching email:", err.message);
+    const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
+    return res.status(401).json({
+      ok: false,
+      error: "Authentication failed or token revoked",
+      loginUrl,
+    });
+  }
+}
+
+async function requireAuth(req, res, next) {
+  let userId = req.body.userId;
+
+  if (!userId && req.headers.authorization) {
+    const parts = req.headers.authorization.split(" ");
+    if (parts.length === 2 && parts[0] === "Bearer") {
+      userId = parts[1];
+    }
+  }
+
+  if (!userId)
+    return res
+      .status(401)
+      .json({ ok: false, error: "Unauthorized: missing userId" });
+
+  try {
+    const token = await getUserToken(userId);
+    const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
+
+    if (!token)
+      return res
+        .status(401)
+        .json({ ok: false, error: "Unauthorized: No token found", loginUrl });
+
+    const oauth2Client = createOAuth2Client();
+    oauth2Client.setCredentials({ refresh_token: token });
+    await oauth2Client.getAccessToken();
+
+    req.oauth2Client = oauth2Client;
+    req.userId = userId;
+    next();
+  } catch (err) {
+    console.error("Auth Middleware Error:", err.message);
+    const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
+    return res.status(401).json({
+      ok: false,
+      error: "Unauthorized: Token invalid or revoked",
+      loginUrl,
+    });
+  }
+}
+
+// GOOGLE CALENDAR HELPERS
+function getCalendarClient(auth) {
+  return google.calendar({ version: "v3", auth });
+}
+
+const DEFAULT_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID;
+const DEFAULT_TIMEZONE = process.env.DEFAULT_TIMEZONE || "Asia/Jakarta";
 
 function cleanString(value) {
-  if (value === null || value === undefined) return '';
+  if (value === null || value === undefined) return "";
   const str = String(value).trim();
-  if (str.toLowerCase() === 'null' || str.toLowerCase() === 'undefined') return '';
+  if (str.toLowerCase() === "null" || str.toLowerCase() === "undefined")
+    return "";
   return str;
 }
 
-// Parse string datetime ke Date
+// Parse string datetime to Date
 function parseDateTime(str) {
   if (/[Z]$/.test(str) || /[+-]\d{2}:?\d{2}$/.test(str)) {
     return new Date(str);
   }
-  return new Date(str + '+07:00');
+  return new Date(str + "+07:00");
 }
 
-// Format 1 event Google Calendar jadi object simpel
+// Format a Google Calendar event into a simple object
 function formatEvent(event) {
   return {
     id: event.id,
-    title: event.summary || '',
-    description: event.description || '',
-    start: (event.start && (event.start.dateTime || event.start.date)) || undefined,
+    title: event.summary || "",
+    description: event.description || "",
+    start:
+      (event.start && (event.start.dateTime || event.start.date)) || undefined,
     end: (event.end && (event.end.dateTime || event.end.date)) || undefined,
-    isAllDay: !!(event.start && event.start.date) && !(event.start && event.start.dateTime),
-    location: event.location || '',
+    isAllDay:
+      !!(event.start && event.start.date) &&
+      !(event.start && event.start.dateTime),
+    location: event.location || "",
     recurringEventId: event.recurringEventId || null,
   };
 }
 
-// Bangun RRULE (RFC 5545) dari spec sederhana, dipakai buat reminder berulang
+// Build RRULE (RFC 5545) from simple spec, used for recurring reminders
 function buildRRule(spec) {
   const freqMap = {
-    daily: 'DAILY',
-    weekly: 'WEEKLY',
-    monthly: 'MONTHLY',
-    yearly: 'YEARLY',
+    daily: "DAILY",
+    weekly: "WEEKLY",
+    monthly: "MONTHLY",
+    yearly: "YEARLY",
   };
   const freq = freqMap[spec.type];
-  if (!freq) throw new Error('Tipe recurrence tidak dikenali: ' + spec.type);
+  if (!freq) throw new Error("Unrecognized recurrence type: " + spec.type);
 
   let rule = `FREQ=${freq}`;
   if (spec.interval) rule += `;INTERVAL=${spec.interval}`;
 
   if (spec.weekdays && spec.weekdays.length > 0) {
     const dayMap = {
-      MONDAY: 'MO',
-      TUESDAY: 'TU',
-      WEDNESDAY: 'WE',
-      THURSDAY: 'TH',
-      FRIDAY: 'FR',
-      SATURDAY: 'SA',
-      SUNDAY: 'SU',
+      MONDAY: "MO",
+      TUESDAY: "TU",
+      WEDNESDAY: "WE",
+      THURSDAY: "TH",
+      FRIDAY: "FR",
+      SATURDAY: "SA",
+      SUNDAY: "SU",
     };
     const days = spec.weekdays
       .map((d) => dayMap[d.toUpperCase()])
       .filter(Boolean);
-    if (days.length > 0) rule += `;BYDAY=${days.join(',')}`;
+    if (days.length > 0) rule += `;BYDAY=${days.join(",")}`;
   }
 
   if (spec.until) {
     const untilDate = new Date(spec.until);
     const yyyy = untilDate.getUTCFullYear();
-    const mm = String(untilDate.getUTCMonth() + 1).padStart(2, '0');
-    const dd = String(untilDate.getUTCDate()).padStart(2, '0');
+    const mm = String(untilDate.getUTCMonth() + 1).padStart(2, "0");
+    const dd = String(untilDate.getUTCDate()).padStart(2, "0");
     rule += `;UNTIL=${yyyy}${mm}${dd}T235959Z`;
   } else if (spec.count) {
     rule += `;COUNT=${spec.count}`;
@@ -98,18 +275,23 @@ function buildRRule(spec) {
   return `RRULE:${rule}`;
 }
 
-// Return null jika tidak ada entry valid (dipakai di editEvent agar
-// patch tidak menyentuh reminders sama sekali)
+// Return null if no valid entry (used in editEvent so patch doesn't touch reminders at all)
 function buildRemindersOrNull(remindersArr) {
   if (!remindersArr || remindersArr.length === 0) return null;
 
   const valid = remindersArr
     .filter((r) => {
-      if (!r || r.minutes === null || r.minutes === undefined || r.minutes === '') return false;
+      if (
+        !r ||
+        r.minutes === null ||
+        r.minutes === undefined ||
+        r.minutes === ""
+      )
+        return false;
       return !isNaN(Number(r.minutes));
     })
     .map((r) => ({
-      method: r.method === 'email' ? 'email' : 'popup',
+      method: r.method === "email" ? "email" : "popup",
       minutes: Number(r.minutes),
     }));
 
@@ -124,13 +306,18 @@ function buildReminders(remindersArr) {
 
   const valid = remindersArr
     .filter((r) => {
-      if (!r || r.minutes === null || r.minutes === undefined || r.minutes === '') {
+      if (
+        !r ||
+        r.minutes === null ||
+        r.minutes === undefined ||
+        r.minutes === ""
+      ) {
         return false;
       }
       return !isNaN(Number(r.minutes));
     })
     .map((r) => ({
-      method: r.method === 'email' ? 'email' : 'popup',
+      method: r.method === "email" ? "email" : "popup",
       minutes: Number(r.minutes),
     }));
 
@@ -143,10 +330,10 @@ function buildReminders(remindersArr) {
 
 // ACTION HANDLERS
 
-// ACTION LIST - Lihat jadwal dalam rentang waktu
+// ACTION LIST - View schedule within a time range
 async function listEvents(calendar, calendarId, body) {
   if (!body.start || !body.end) {
-    throw new Error('Parameter start dan end wajib diisi');
+    throw new Error("Parameters start and end are required");
   }
 
   const result = await calendar.events.list({
@@ -154,33 +341,33 @@ async function listEvents(calendar, calendarId, body) {
     timeMin: new Date(body.start).toISOString(),
     timeMax: new Date(body.end).toISOString(),
     singleEvents: true,
-    orderBy: 'startTime',
+    orderBy: "startTime",
   });
 
   return (result.data.items || []).map(formatEvent);
 }
 
-// ACTION ADD - Tambah reminder/event baru (biasa atau berulang)
+// ACTION ADD - Add new reminder/event (single or recurring)
 async function addEvent(calendar, calendarId, body) {
   const title = cleanString(body.title);
   if (!title || !body.start || !body.end) {
-    throw new Error('Parameter title, start, end wajib diisi');
+    throw new Error("Parameters title, start, end are required");
   }
 
   const timeZone = cleanString(body.timezone) || DEFAULT_TIMEZONE;
-  const isAllDay = body.all_day === true || body.all_day === 'true';
+  const isAllDay = body.all_day === true || body.all_day === "true";
 
   const startDate = parseDateTime(body.start);
   const endDate = parseDateTime(body.end);
 
   let startObj, endObj;
   if (isAllDay) {
-    const startStr = body.start.split('T')[0];
-    let endStr = body.end.split('T')[0];
+    const startStr = body.start.split("T")[0];
+    let endStr = body.end.split("T")[0];
     if (startStr === endStr) {
-      const d = new Date(startStr + 'T00:00:00Z');
+      const d = new Date(startStr + "T00:00:00Z");
       d.setUTCDate(d.getUTCDate() + 1);
-      endStr = d.toISOString().split('T')[0];
+      endStr = d.toISOString().split("T")[0];
     }
     startObj = { date: startStr };
     endObj = { date: endStr };
@@ -209,10 +396,12 @@ async function addEvent(calendar, calendarId, body) {
   return formatEvent(result.data);
 }
 
-// ACTION EDIT - Edit reminder/event yang sudah ada (partial update)
+// ACTION EDIT - Edit existing reminder/event (partial update)
 async function editEvent(calendar, calendarId, body) {
   if (!body.eventId && (!body.eventIds || !Array.isArray(body.eventIds))) {
-    throw new Error('Parameter eventId (string) atau eventIds (array) wajib diisi');
+    throw new Error(
+      "Parameter eventId (string) or eventIds (array) is required",
+    );
   }
 
   const patch = {};
@@ -220,25 +409,26 @@ async function editEvent(calendar, calendarId, body) {
     const title = cleanString(body.title);
     if (title) patch.summary = title;
   }
-  if (body.description !== undefined) patch.description = cleanString(body.description);
+  if (body.description !== undefined)
+    patch.description = cleanString(body.description);
   if (body.location) {
     const location = cleanString(body.location);
     if (location) patch.location = location;
   }
   if (body.start && body.end) {
     const timeZone = cleanString(body.timezone) || DEFAULT_TIMEZONE;
-    const isAllDay = body.all_day === true || body.all_day === 'true';
+    const isAllDay = body.all_day === true || body.all_day === "true";
 
     const startDate = parseDateTime(body.start);
     const endDate = parseDateTime(body.end);
 
     if (isAllDay) {
-      const startStr = body.start.split('T')[0];
-      let endStr = body.end.split('T')[0];
+      const startStr = body.start.split("T")[0];
+      let endStr = body.end.split("T")[0];
       if (startStr === endStr) {
-        const d = new Date(startStr + 'T00:00:00Z');
+        const d = new Date(startStr + "T00:00:00Z");
         d.setUTCDate(d.getUTCDate() + 1);
-        endStr = d.toISOString().split('T')[0];
+        endStr = d.toISOString().split("T")[0];
       }
       patch.start = { date: startStr, dateTime: null };
       patch.end = { date: endStr, dateTime: null };
@@ -257,12 +447,15 @@ async function editEvent(calendar, calendarId, body) {
 
   let rawIds = body.eventIds || body.eventId || [];
   if (!Array.isArray(rawIds)) rawIds = [rawIds];
-  
+
   // Filter out empty strings or unresolved botika templates
-  const idsToEdit = rawIds.filter(id => id && typeof id === 'string' && id.trim() !== '' && !id.includes('{{'));
-  
+  const idsToEdit = rawIds.filter(
+    (id) =>
+      id && typeof id === "string" && id.trim() !== "" && !id.includes("{{"),
+  );
+
   if (idsToEdit.length === 0) {
-    throw new Error('Tidak ada eventId yang valid untuk diedit');
+    throw new Error("No valid eventId to edit");
   }
 
   const editedIds = [];
@@ -279,12 +472,12 @@ async function editEvent(calendar, calendarId, body) {
       editedEvents.push(formatEvent(result.data));
       editedIds.push(id);
     } catch (error) {
-      console.error(`Gagal mengedit eventId ${id}:`, error.message);
+      console.error(`Failed to edit eventId ${id}:`, error.message);
       failedIds.push({ id, reason: error.message });
     }
   }
 
-  // Backwards compatibility untuk single eventId
+  // Backwards compatibility for single eventId
   if (!body.eventIds && editedEvents.length === 1 && failedIds.length === 0) {
     return editedEvents[0];
   }
@@ -294,24 +487,29 @@ async function editEvent(calendar, calendarId, body) {
     editedCount: editedIds.length,
     editedIds,
     failedIds,
-    events: editedEvents
+    events: editedEvents,
   };
 }
 
-// ACTION: DELETE - Hapus reminder/event (bisa single atau multiple)
+// ACTION: DELETE - Delete reminder/event (single or multiple)
 async function deleteEvent(calendar, calendarId, body) {
   if (!body.eventId && (!body.eventIds || !Array.isArray(body.eventIds))) {
-    throw new Error('Parameter eventId (string) atau eventIds (array) wajib diisi');
+    throw new Error(
+      "Parameter eventId (string) or eventIds (array) is required",
+    );
   }
 
   let rawIds = body.eventIds || body.eventId || [];
   if (!Array.isArray(rawIds)) rawIds = [rawIds];
-  
+
   // Filter out empty strings or unresolved botika templates
-  const idsToDelete = rawIds.filter(id => id && typeof id === 'string' && id.trim() !== '' && !id.includes('{{'));
+  const idsToDelete = rawIds.filter(
+    (id) =>
+      id && typeof id === "string" && id.trim() !== "" && !id.includes("{{"),
+  );
 
   if (idsToDelete.length === 0) {
-    throw new Error('Tidak ada eventId yang valid untuk dihapus');
+    throw new Error("No valid eventId to delete");
   }
 
   const deletedIds = [];
@@ -322,20 +520,20 @@ async function deleteEvent(calendar, calendarId, body) {
       await calendar.events.delete({ calendarId, eventId: id });
       deletedIds.push(id);
     } catch (error) {
-      console.error(`Gagal menghapus eventId ${id}:`, error.message);
+      console.error(`Failed to delete eventId ${id}:`, error.message);
       failedIds.push({ id, reason: error.message });
     }
   }
 
-  return { 
-    deleted: true, 
+  return {
+    deleted: true,
     deletedCount: deletedIds.length,
     deletedIds,
-    failedIds
+    failedIds,
   };
 }
 
-// ACTION: SEARCH - Cari reminder berdasarkan kata kunci
+// ACTION: SEARCH - Search reminder by keyword
 async function searchEvents(calendar, calendarId, body) {
   const query = cleanString(body.query);
 
@@ -352,7 +550,7 @@ async function searchEvents(calendar, calendarId, body) {
     timeMin,
     timeMax,
     singleEvents: true,
-    orderBy: 'startTime',
+    orderBy: "startTime",
   });
 
   return (result.data.items || []).map(formatEvent);
@@ -363,73 +561,82 @@ async function searchEvents(calendar, calendarId, body) {
 const app = express();
 app.use(express.json());
 
-// Kalau body request bukan JSON valid, express.json() akan throw
-// sebelum masuk ke route
+// If request body is not valid JSON, express.json() will throw before reaching the route
 app.use((err, req, res, next) => {
-  if (err && err.type === 'entity.parse.failed') {
-    return res.status(400).json({ ok: false, error: 'Body request bukan JSON yang valid' });
+  if (err && err.type === "entity.parse.failed") {
+    return res
+      .status(400)
+      .json({ ok: false, error: "Request body is not valid JSON" });
   }
   next(err);
 });
 
 // CORS
-app.use('/api/calendar', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+app.use("/api/calendar", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
 
-app.options('/api/calendar', (req, res) => {
+app.options("/api/calendar", (req, res) => {
   res.status(204).end();
 });
 
-app.post('/api/calendar', async (req, res) => {
+// Auth endpoints
+app.get("/auth/login", loginHandler);
+app.get("/auth/callback", callbackHandler);
+app.post("/api/auth/check", checkAuthHandler);
+app.post("/api/auth/email", getEmailHandler);
+
+app.post("/api/calendar", requireAuth, async (req, res) => {
   const body = req.body;
 
-  if (!body || typeof body !== 'object') {
-    return res.status(400).json({ ok: false, error: 'Body request bukan JSON yang valid' });
-  }
-
-  if (body.secret !== process.env.PROXY_SECRET) {
-    return res.status(401).json({ ok: false, error: 'Unauthorized: secret key salah' });
+  if (!body || typeof body !== "object") {
+    return res
+      .status(400)
+      .json({ ok: false, error: "Request body is not valid JSON" });
   }
 
   const calendarId = cleanString(body.calendarId) || DEFAULT_CALENDAR_ID;
-  const calendar = getCalendarClient();
+  const calendar = getCalendarClient(req.oauth2Client);
 
   try {
     let data;
     switch (body.action) {
-      case 'list':
+      case "list":
         data = await listEvents(calendar, calendarId, body);
         break;
-      case 'add':
+      case "add":
         data = await addEvent(calendar, calendarId, body);
         break;
-      case 'edit':
+      case "edit":
         data = await editEvent(calendar, calendarId, body);
         break;
-      case 'delete':
+      case "delete":
         data = await deleteEvent(calendar, calendarId, body);
         break;
-      case 'search':
+      case "search":
         data = await searchEvents(calendar, calendarId, body);
         break;
       default:
-        return res.status(400).json({ ok: false, error: 'Action tidak dikenali: ' + body.action });
+        return res
+          .status(400)
+          .json({ ok: false, error: "Action not recognized: " + body.action });
     }
 
     return res.status(200).json({ ok: true, data });
   } catch (err) {
-    return res.status(500).json({ ok: false, error: err.message || 'Terjadi kesalahan tak terduga' });
+    return res.status(500).json({
+      ok: false,
+      error: err.message || "An unexpected error occurred",
+    });
   }
 });
 
 // Fallback error handler
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ ok: false, error: 'Terjadi kesalahan tak terduga' });
+  res.status(500).json({ ok: false, error: "An unexpected error occurred" });
 });
 
 const PORT = process.env.PORT;
