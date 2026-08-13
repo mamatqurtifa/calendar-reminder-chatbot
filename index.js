@@ -586,11 +586,14 @@ async function deleteEvent(calendar, calendarId, body) {
 async function searchEvents(calendar, calendarId, body) {
   const query = cleanString(body.query);
 
-  const timeMin = body.start
-    ? new Date(body.start).toISOString()
+  const startStr = cleanString(body.start);
+  const endStr = cleanString(body.end);
+
+  const timeMin = startStr
+    ? new Date(startStr).toISOString()
     : new Date().toISOString();
-  const timeMax = body.end
-    ? new Date(body.end).toISOString()
+  const timeMax = endStr
+    ? new Date(endStr).toISOString()
     : new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString();
 
   const result = await calendar.events.list({
