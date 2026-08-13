@@ -108,7 +108,16 @@ async function checkAuthHandler(req, res) {
     if (token) {
       return res.json({ ok: true, message: "Authenticated" });
     } else {
-      const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
+      const oauth2Client = createOAuth2Client();
+      const loginUrl = oauth2Client.generateAuthUrl({
+        access_type: "offline",
+        scope: [
+          "https://www.googleapis.com/auth/calendar",
+          "https://www.googleapis.com/auth/userinfo.email",
+        ],
+        state: userId,
+        prompt: "consent",
+      });
       return res.json({ ok: false, error: "Not authenticated", loginUrl });
     }
   } catch (err) {
@@ -125,7 +134,16 @@ async function getEmailHandler(req, res) {
   try {
     const token = await getUserToken(userId);
     if (!token) {
-      const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
+      const oauth2Client = createOAuth2Client();
+      const loginUrl = oauth2Client.generateAuthUrl({
+        access_type: "offline",
+        scope: [
+          "https://www.googleapis.com/auth/calendar",
+          "https://www.googleapis.com/auth/userinfo.email",
+        ],
+        state: userId,
+        prompt: "consent",
+      });
       return res
         .status(401)
         .json({ ok: false, error: "Not authenticated", loginUrl });
@@ -140,12 +158,23 @@ async function getEmailHandler(req, res) {
     return res.json({ ok: true, data: { email: userInfo.data.email } });
   } catch (err) {
     console.error("Error fetching email:", err.message);
-    const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
-    return res.status(401).json({
-      ok: false,
-      error: "Authentication failed or token revoked",
-      loginUrl,
+    const oauth2ClientFallback = createOAuth2Client();
+    const loginUrl = oauth2ClientFallback.generateAuthUrl({
+      access_type: "offline",
+      scope: [
+        "https://www.googleapis.com/auth/calendar",
+        "https://www.googleapis.com/auth/userinfo.email",
+      ],
+      state: userId,
+      prompt: "consent",
     });
+    return res
+      .status(401)
+      .json({
+        ok: false,
+        error: "Authentication failed or token revoked",
+        loginUrl,
+      });
   }
 }
 
@@ -166,12 +195,21 @@ async function requireAuth(req, res, next) {
 
   try {
     const token = await getUserToken(userId);
-    const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
-
-    if (!token)
+    if (!token) {
+      const oauth2Client = createOAuth2Client();
+      const loginUrl = oauth2Client.generateAuthUrl({
+        access_type: "offline",
+        scope: [
+          "https://www.googleapis.com/auth/calendar",
+          "https://www.googleapis.com/auth/userinfo.email",
+        ],
+        state: userId,
+        prompt: "consent",
+      });
       return res
         .status(401)
         .json({ ok: false, error: "Unauthorized: No token found", loginUrl });
+    }
 
     const oauth2Client = createOAuth2Client();
     oauth2Client.setCredentials({ refresh_token: token });
@@ -182,12 +220,23 @@ async function requireAuth(req, res, next) {
     next();
   } catch (err) {
     console.error("Auth Middleware Error:", err.message);
-    const loginUrl = `${req.protocol}://${req.get("host")}/auth/login?userId=${encodeURIComponent(userId)}`;
-    return res.status(401).json({
-      ok: false,
-      error: "Unauthorized: Token invalid or revoked",
-      loginUrl,
+    const oauth2ClientFallback = createOAuth2Client();
+    const loginUrl = oauth2ClientFallback.generateAuthUrl({
+      access_type: "offline",
+      scope: [
+        "https://www.googleapis.com/auth/calendar",
+        "https://www.googleapis.com/auth/userinfo.email",
+      ],
+      state: userId,
+      prompt: "consent",
     });
+    return res
+      .status(401)
+      .json({
+        ok: false,
+        error: "Unauthorized: Token invalid or revoked",
+        loginUrl,
+      });
   }
 }
 
