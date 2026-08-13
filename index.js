@@ -98,8 +98,19 @@ async function callbackHandler(req, res) {
   }
 }
 
+function extractUserId(req) {
+  let userId = req.body.userId || req.query.userId;
+  if (!userId && req.headers.authorization) {
+    const parts = req.headers.authorization.split(" ");
+    if (parts.length === 2 && parts[0] === "Bearer") {
+      userId = parts[1];
+    }
+  }
+  return userId;
+}
+
 async function checkAuthHandler(req, res) {
-  const { userId } = req.body;
+  const userId = extractUserId(req);
   if (!userId)
     return res.status(400).json({ ok: false, error: "userId is required" });
 
@@ -127,7 +138,7 @@ async function checkAuthHandler(req, res) {
 }
 
 async function getEmailHandler(req, res) {
-  const { userId } = req.body;
+  const userId = extractUserId(req);
   if (!userId)
     return res.status(400).json({ ok: false, error: "userId is required" });
 
@@ -168,25 +179,16 @@ async function getEmailHandler(req, res) {
       state: userId,
       prompt: "consent",
     });
-    return res
-      .status(401)
-      .json({
-        ok: false,
-        error: "Authentication failed or token revoked",
-        loginUrl,
-      });
+    return res.status(401).json({
+      ok: false,
+      error: "Authentication failed or token revoked",
+      loginUrl,
+    });
   }
 }
 
 async function requireAuth(req, res, next) {
-  let userId = req.body.userId;
-
-  if (!userId && req.headers.authorization) {
-    const parts = req.headers.authorization.split(" ");
-    if (parts.length === 2 && parts[0] === "Bearer") {
-      userId = parts[1];
-    }
-  }
+  const userId = extractUserId(req);
 
   if (!userId)
     return res
@@ -230,13 +232,11 @@ async function requireAuth(req, res, next) {
       state: userId,
       prompt: "consent",
     });
-    return res
-      .status(401)
-      .json({
-        ok: false,
-        error: "Unauthorized: Token invalid or revoked",
-        loginUrl,
-      });
+    return res.status(401).json({
+      ok: false,
+      error: "Unauthorized: Token invalid or revoked",
+      loginUrl,
+    });
   }
 }
 
