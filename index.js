@@ -112,15 +112,15 @@ function extractUserId(req) {
 async function checkAuthHandler(req, res) {
   const userId = extractUserId(req);
   if (!userId)
-    return res.status(400).json({ ok: false, error: "userId is required" });
+    return res.status(400).json({ login_status: "failed", error: "userId is required" });
 
   try {
     const token = await getUserToken(userId);
     if (token) {
-      return res.json({ ok: true, message: "Authenticated" });
+      return res.json({ login_status: "success", message: "Authenticated" });
     } else {
       const oauth2Client = createOAuth2Client();
-      const loginUrl = oauth2Client.generateAuthUrl({
+      const login_url = oauth2Client.generateAuthUrl({
         access_type: "offline",
         scope: [
           "https://www.googleapis.com/auth/calendar",
@@ -129,24 +129,24 @@ async function checkAuthHandler(req, res) {
         state: userId,
         prompt: "consent",
       });
-      return res.json({ ok: false, error: "Not authenticated", loginUrl });
+      return res.json({ login_status: "failed", login_url });
     }
   } catch (err) {
     console.error("Redis error during auth check:", err);
-    return res.status(500).json({ ok: false, error: "Internal Server Error" });
+    return res.status(500).json({ login_status: "failed", error: "Internal Server Error" });
   }
 }
 
 async function getEmailHandler(req, res) {
   const userId = extractUserId(req);
   if (!userId)
-    return res.status(400).json({ ok: false, error: "userId is required" });
+    return res.status(400).json({ login_status: "failed", error: "userId is required" });
 
   try {
     const token = await getUserToken(userId);
     if (!token) {
       const oauth2Client = createOAuth2Client();
-      const loginUrl = oauth2Client.generateAuthUrl({
+      const login_url = oauth2Client.generateAuthUrl({
         access_type: "offline",
         scope: [
           "https://www.googleapis.com/auth/calendar",
@@ -157,7 +157,7 @@ async function getEmailHandler(req, res) {
       });
       return res
         .status(401)
-        .json({ ok: false, error: "Not authenticated", loginUrl });
+        .json({ login_status: "failed", login_url });
     }
 
     const oauth2Client = createOAuth2Client();
@@ -170,7 +170,7 @@ async function getEmailHandler(req, res) {
   } catch (err) {
     console.error("Error fetching email:", err.message);
     const oauth2ClientFallback = createOAuth2Client();
-    const loginUrl = oauth2ClientFallback.generateAuthUrl({
+    const login_url = oauth2ClientFallback.generateAuthUrl({
       access_type: "offline",
       scope: [
         "https://www.googleapis.com/auth/calendar",
@@ -180,9 +180,9 @@ async function getEmailHandler(req, res) {
       prompt: "consent",
     });
     return res.status(401).json({
-      ok: false,
+      login_status: "failed",
       error: "Authentication failed or token revoked",
-      loginUrl,
+      login_url,
     });
   }
 }
@@ -193,13 +193,13 @@ async function requireAuth(req, res, next) {
   if (!userId)
     return res
       .status(401)
-      .json({ ok: false, error: "Unauthorized: missing userId" });
+      .json({ login_status: "failed", error: "Unauthorized: missing userId" });
 
   try {
     const token = await getUserToken(userId);
     if (!token) {
       const oauth2Client = createOAuth2Client();
-      const loginUrl = oauth2Client.generateAuthUrl({
+      const login_url = oauth2Client.generateAuthUrl({
         access_type: "offline",
         scope: [
           "https://www.googleapis.com/auth/calendar",
@@ -210,7 +210,7 @@ async function requireAuth(req, res, next) {
       });
       return res
         .status(401)
-        .json({ ok: false, error: "Unauthorized: No token found", loginUrl });
+        .json({ login_status: "failed", login_url });
     }
 
     const oauth2Client = createOAuth2Client();
@@ -223,7 +223,7 @@ async function requireAuth(req, res, next) {
   } catch (err) {
     console.error("Auth Middleware Error:", err.message);
     const oauth2ClientFallback = createOAuth2Client();
-    const loginUrl = oauth2ClientFallback.generateAuthUrl({
+    const login_url = oauth2ClientFallback.generateAuthUrl({
       access_type: "offline",
       scope: [
         "https://www.googleapis.com/auth/calendar",
@@ -233,9 +233,9 @@ async function requireAuth(req, res, next) {
       prompt: "consent",
     });
     return res.status(401).json({
-      ok: false,
+      login_status: "failed",
       error: "Unauthorized: Token invalid or revoked",
-      loginUrl,
+      login_url,
     });
   }
 }
